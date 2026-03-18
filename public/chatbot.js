@@ -26,8 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
             </button>
             <div class="chat-prompts-menu" id="chat-prompts-menu">
               <div class="prompt-item">what is the grace x ecosystem and what are her capabilities?</div>
+              <div class="prompt-item">what makes GRACE-X different?</div>
               <div class="prompt-item">what are the modules and how do they help?</div>
-              <div class="prompt-item">what is grace and what is a soverign ai and how many other systems are lik you?</div>
+              <div class="prompt-item">what is grace and what is a sovereign ai and how many other systems are like you?</div>
               <div class="prompt-item">what are the commercial and defence applications for TITAN?</div>
               <div class="prompt-item">how do the core orchestration layers work together?</div>
               <div class="prompt-item">who built you?</div>
