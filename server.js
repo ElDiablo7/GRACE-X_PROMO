@@ -189,7 +189,7 @@ app.post('/api/voice', async (req, res) => {
 });
 
 // Fallback route for index.html
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
