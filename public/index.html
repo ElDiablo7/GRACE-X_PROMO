@@ -918,12 +918,22 @@
     ];
 
     const moduleNodes = [
-      { id: 'builder', type: 'module', name: 'Builder', role: 'Trades / construction ops', angle: -18, radius: 300, z: 48, status: 'up' },
-      { id: 'siteops', type: 'module', name: 'SiteOps', role: 'Field management / coordination', angle: 42, radius: 300, z: 36, status: 'up' },
-      { id: 'uplift', type: 'module', name: 'Uplift', role: 'Welfare / support / mentoring', angle: 101, radius: 300, z: 44, status: 'up' },
-      { id: 'homesafe', type: 'module', name: 'HomeSafe', role: 'Smart home / family safety', angle: 165, radius: 300, z: 30, status: 'warn' },
-      { id: 'creator', type: 'module', name: 'Creator', role: 'Creative suite / media tools', angle: 224, radius: 300, z: 42, status: 'up' },
-      { id: 'tradelink', type: 'module', name: 'TradeLink', role: 'Compliance / workstream routing', angle: 292, radius: 300, z: 34, status: 'alert' }
+      { id: 'forge', type: 'module', name: 'Forge', role: 'Development / Creation', angle: 0, radius: 300, z: 40, status: 'up' },
+      { id: 'sport', type: 'module', name: 'Sport', role: 'Sports Analytics', angle: 22.5, radius: 300, z: 35, status: 'up' },
+      { id: 'osint', type: 'module', name: 'OSINT', role: 'Intelligence / Recon', angle: 45, radius: 300, z: 45, status: 'up' },
+      { id: 'accounting', type: 'module', name: 'Accounting', role: 'Finance / Ledger', angle: 67.5, radius: 300, z: 30, status: 'up' },
+      { id: 'builder', type: 'module', name: 'Builder', role: 'Trades / Construction', angle: 90, radius: 300, z: 48, status: 'up' },
+      { id: 'tradelink', type: 'module', name: 'TradeLink', role: 'Compliance / Routing', angle: 112.5, radius: 300, z: 34, status: 'alert' },
+      { id: 'guardian', type: 'module', name: 'Guardian', role: 'Security / Patrol', angle: 135, radius: 300, z: 42, status: 'up' },
+      { id: 'siteops', type: 'module', name: 'SiteOps', role: 'Field Management', angle: 157.5, radius: 300, z: 36, status: 'up' },
+      { id: 'family', type: 'module', name: 'Family', role: 'Home / Coordination', angle: 180, radius: 300, z: 30, status: 'warn' },
+      { id: 'uplift', type: 'module', name: 'Uplift', role: 'Wellness / Mentoring', angle: 202.5, radius: 300, z: 44, status: 'up' },
+      { id: 'fit', type: 'module', name: 'Fit', role: 'Fitness / Health', angle: 225, radius: 300, z: 38, status: 'up' },
+      { id: 'yoga', type: 'module', name: 'Yoga', role: 'Mindfulness / Flow', angle: 247.5, radius: 300, z: 40, status: 'up' },
+      { id: 'chef', type: 'module', name: 'Chef', role: 'Culinary / Nutrition', angle: 270, radius: 300, z: 32, status: 'up' },
+      { id: 'beauty', type: 'module', name: 'Beauty', role: 'Aesthetics / Style', angle: 292.5, radius: 300, z: 46, status: 'up' },
+      { id: 'creator', type: 'module', name: 'Creator', role: 'Creative / Media', angle: 315, radius: 300, z: 42, status: 'up' },
+      { id: 'gamer', type: 'module', name: 'Gamer', role: 'Gaming / Interaction', angle: 337.5, radius: 300, z: 36, status: 'up' }
     ];
 
     const outerNodes = [
@@ -940,12 +950,22 @@
       sentinel: { title: 'Sentinel', desc: 'Controls what enters, what routes, what is allowed, and where traffic is permitted to move.' },
       venus: { title: 'Venus', desc: 'Acts as the external interaction boundary so outside-facing workflows stay sandboxed.' },
       titan: { title: 'TITAN', desc: 'Internal deep-analysis nucleus for threat logic, system integrity checks, and hard-edged decision support.' },
+      forge: { title: 'Forge', desc: 'Core development environment and creation engine for the ecosystem.' },
+      sport: { title: 'Sport', desc: 'Advanced analytics engine for physical performance, team data, and sports metrics.' },
+      osint: { title: 'OSINT', desc: 'Open-source intelligence layer for gathering, parsing, and analysing external data.' },
+      accounting: { title: 'Accounting', desc: 'Financial ledger, reporting, processing, and commercial analytics.' },
       builder: { title: 'Builder', desc: 'Construction and trades workflow intelligence: quoting, scheduling, ops support, and practical automation.' },
       siteops: { title: 'SiteOps', desc: 'Field coordination, task flow, operational oversight, and live worksite intelligence support.' },
       uplift: { title: 'Uplift', desc: 'Support and welfare lane focused on mentoring, resilience, check-ins, and human-centred assistance.' },
-      homesafe: { title: 'HomeSafe', desc: 'Consumer/home deployment lane: assistant capability, family protection logic, and smart-environment awareness.' },
+      family: { title: 'Family / HomeSafe', desc: 'Consumer environment lane: assistant capability, family protection logic, and smart-environment awareness.' },
       creator: { title: 'Creator', desc: 'Media, visual production, idea generation, content flow, and creator-facing execution tools.' },
       tradelink: { title: 'TradeLink', desc: 'Trade/compliance infrastructure lane linking workstreams, tasks, legislation awareness, and process routing.' },
+      guardian: { title: 'Guardian', desc: 'Active security, patrol logic, and environmental safety monitoring.' },
+      fit: { title: 'Fit', desc: 'Physical health, training programs, and physiologic monitoring.' },
+      yoga: { title: 'Yoga', desc: 'Mindfulness, flow-states, and mental centering capability.' },
+      chef: { title: 'Chef', desc: 'Culinary intelligence, nutrition planning, and recipe formulation.' },
+      beauty: { title: 'Beauty', desc: 'Aesthetics, style alignment, and cosmetic intelligence.' },
+      gamer: { title: 'Gamer', desc: 'Interactive entertainment integration, gaming strategy, and environment interaction.' },
       mobile: { title: 'Mobile Layer', desc: 'Where GRACE-X becomes a user-facing phone experience: alerts, voice, dashboards, and daily interactions.' },
       web: { title: 'Web Stack', desc: 'Sites, portals, dashboards, landing pages, client systems, and service surfaces built on top of the core stack.' },
       api: { title: 'API Integrations', desc: 'External feeds, automation links, partner systems, and structured data ingress/egress.' },
