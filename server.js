@@ -128,7 +128,7 @@ app.post('/api/chat', async (req, res) => {
                 model: "gpt-4", // The user mentioned gpt4.0, using gpt-4
                 messages: apiMessages,
                 temperature: 0.7,
-                max_tokens: 150,
+                max_tokens: 800,
             });
 
             const reply = response.choices[0].message;
