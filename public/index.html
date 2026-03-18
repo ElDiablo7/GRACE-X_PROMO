@@ -649,6 +649,34 @@
     .module-node { color: var(--blue); }
     .governance-node { color: var(--violet); }
     .outer-node { color: var(--silver); }
+    
+    .transparent-card {
+      background: rgba(4, 10, 20, 0.4) !important;
+      backdrop-filter: blur(4px) !important;
+      border: 1px solid rgba(130,194,255,0.15) !important;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.3) !important;
+      padding: 8px 12px;
+      min-width: 120px;
+      text-align: center;
+    }
+    .transparent-card .node-name { margin-bottom: 2px; }
+    .brain-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 8px;
+      animation: heartBeat 1.4s ease-in-out infinite;
+      color: var(--cyan);
+      filter: drop-shadow(0 0 14px currentColor);
+    }
+    @keyframes heartBeat {
+      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px currentColor); }
+      15% { transform: scale(1.12); filter: drop-shadow(0 0 22px currentColor); }
+      30% { transform: scale(1.04); filter: drop-shadow(0 0 14px currentColor); }
+      45% { transform: scale(1.15); filter: drop-shadow(0 0 28px currentColor); }
+      60% { transform: scale(1); filter: drop-shadow(0 0 10px currentColor); }
+    }
+    .core-shell { cursor: grab; }
+    .core-shell:active { cursor: grabbing; }
 
     .connector-layer {
       position: absolute;
@@ -996,6 +1024,9 @@
     let pulseFlow = true;
     let rotX = 14, rotZ = 0, rotY = 0, zoom = 1;
     let targetRotX = 14, targetRotZ = 0, targetRotY = 0, targetZoom = 1;
+    let panX = 0, panY = 0;
+    let targetPanX = 0, targetPanY = 0;
+    let isPanning = false;
     let isDragging = false, lastX = 0, lastY = 0;
     let tourTimer = null;
     let touring = false;
@@ -1012,16 +1043,33 @@
       wrap.dataset.type = node.type;
       const p = polar(node.radius, node.angle);
       wrap.style.transform = `translate(-50%, -50%) translate3d(${p.x}px, ${p.y}px, ${node.z}px)`;
-      wrap.innerHTML = `
-        <div class="node-card status-${node.status || 'up'}">
-          <div class="node-top">
-            <div class="node-kicker">${node.type}</div>
-            <div class="node-status"></div>
+      
+      if (node.type === 'module') {
+        wrap.innerHTML = `
+          <div class="brain-icon status-${node.status || 'up'}">
+            <svg viewBox="0 0 24 24" width="45" height="45" stroke="currentColor" fill="rgba(108,225,255,0.22)" stroke-width="1.2">
+              <path d="M12 4.5C10.5 3 8 3 8 5C8 5.5 8.2 6 8.5 6.5C6.5 7 5 8.5 5 10.5C5 12 6 13.2 7.2 13.8C7 14.2 6.8 14.8 6.8 15.5C6.8 17.5 8.5 19 10.5 19C11 19 11.5 18.8 12 18.5C12.5 18.8 13 19 13.5 19C15.5 19 17.2 17.5 17.2 15.5C17.2 14.8 17 14.2 16.8 13.8C18 13.2 19 12 19 10.5C19 8.5 17.5 7 15.5 6.5C15.8 6 16 5.5 16 5C16 3 13.5 3 12 4.5Z" />
+              <path d="M12 4.5V18.5" opacity="0.5"/>
+            </svg>
           </div>
-          <div class="node-name">${node.name}</div>
-          <div class="node-role">${node.role}</div>
-        </div>
-        <div class="node-pulse"></div>`;
+          <div class="node-card transparent-card status-${node.status || 'up'}">
+            <div class="node-name">${node.name}</div>
+            <div class="node-role">${node.role}</div>
+          </div>
+        `;
+      } else {
+        wrap.innerHTML = `
+          <div class="node-card status-${node.status || 'up'}">
+            <div class="node-top">
+              <div class="node-kicker">${node.type}</div>
+              <div class="node-status"></div>
+            </div>
+            <div class="node-name">${node.name}</div>
+            <div class="node-role">${node.role}</div>
+          </div>
+          <div class="node-pulse"></div>`;
+      }
+      
       wrap.addEventListener('click', () => selectNode(node.id));
       tilt.appendChild(wrap);
       return wrap;
@@ -1189,6 +1237,8 @@
       targetRotZ = 0;
       targetRotY = 0;
       targetZoom = 1;
+      targetPanX = 0;
+      targetPanY = 0;
     });
 
     tourBtn.addEventListener('click', () => {
@@ -1199,11 +1249,24 @@
       isDragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
+      if (e.target.closest('#coreNode')) {
+        isPanning = true;
+        isDragging = false;
+      }
       sceneShell.classList.add('dragging');
       sceneShell.setPointerCapture(e.pointerId);
     });
 
     sceneShell.addEventListener('pointermove', (e) => {
+      if (isPanning) {
+        const dx = e.clientX - lastX;
+        const dy = e.clientY - lastY;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        targetPanX += dx;
+        targetPanY += dy;
+        return;
+      }
       if (!isDragging) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
@@ -1216,6 +1279,7 @@
 
     const stopDrag = () => {
       isDragging = false;
+      isPanning = false;
       sceneShell.classList.remove('dragging');
     };
 
@@ -1230,12 +1294,14 @@
     }, { passive: false });
 
     function animate() {
-      if (autoRotate && !isDragging && !touring) targetRotY += 0.08;
+      if (autoRotate && !isDragging && !touring && !isPanning) targetRotY += 0.08;
       rotX += (targetRotX - rotX) * 0.08;
       rotZ += (targetRotZ - rotZ) * 0.08;
       rotY += (targetRotY - rotY) * 0.08;
       zoom += (targetZoom - zoom) * 0.08;
-      tilt.style.transform = `rotateX(${rotX}deg) rotateZ(${rotZ}deg) rotateY(${rotY}deg) scale(${zoom})`;
+      panX += (targetPanX - panX) * 0.15;
+      panY += (targetPanY - panY) * 0.15;
+      tilt.style.transform = `translate(${panX}px, ${panY}px) rotateX(${rotX}deg) rotateZ(${rotZ}deg) rotateY(${rotY}deg) scale(${zoom})`;
       requestAnimationFrame(animate);
     }
 
