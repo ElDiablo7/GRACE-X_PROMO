@@ -379,6 +379,22 @@
       font-size: 12px;
       letter-spacing: .04em;
     }
+    
+    .hud-help-btn {
+      cursor: pointer;
+      background: rgba(108, 225, 255, 0.12);
+      border-color: rgba(108, 225, 255, 0.3);
+      color: var(--cyan);
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+    
+    .hud-help-btn:hover {
+      background: rgba(108, 225, 255, 0.25);
+      border-color: rgba(108, 225, 255, 0.6);
+      box-shadow: 0 0 14px rgba(108, 225, 255, 0.3);
+      transform: translateY(-1px);
+    }
 
     .hud-title {
       position: absolute;
@@ -895,6 +911,7 @@
     <main class="scene-shell" id="sceneShell">
       <div class="hud-top">
         <div class="hud-chip">Drag to rotate • Wheel to zoom</div>
+        <button id="hudHelpBtn" class="hud-chip hud-help-btn">💬 Ask GRACE-X for Help</button>
         <div class="hud-chip">Interactive • Animated • Pitch Ready</div>
       </div>
       <div class="hud-title">

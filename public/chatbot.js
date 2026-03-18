@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.insertAdjacentHTML('beforeend', widgetHTML);
 
     const toggleBtn = document.getElementById("chat-toggle-btn");
+    const hudHelpBtn = document.getElementById("hudHelpBtn");
     const closeBtn = document.getElementById("chat-close-btn");
     const chatWindow = document.getElementById("chat-window");
     const chatInput = document.getElementById("chat-input");
@@ -91,6 +92,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     toggleBtn.addEventListener("click", toggleChat);
     closeBtn.addEventListener("click", toggleChat);
+    
+    if (hudHelpBtn) {
+        hudHelpBtn.addEventListener("click", () => {
+            if (!isChatOpen) toggleChat();
+        });
+    }
 
     function addMessage(text, sender) {
         const msgDiv = document.createElement("div");
