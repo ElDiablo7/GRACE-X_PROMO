@@ -20,6 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
               Welcome. I am GRACE-X, a modular AI operating system. How can I assist you with enterprise and defence-grade deployments today?
             </div>
           </div>
+          <div class="chat-prompts-dropdown">
+            <button id="chat-prompts-toggle">
+              Suggested Queries ▾
+            </button>
+            <div class="chat-prompts-menu" id="chat-prompts-menu">
+              <div class="prompt-item">what is the grace x ecosystem and what are her capabilities?</div>
+              <div class="prompt-item">what are the modules and how do they help?</div>
+              <div class="prompt-item">what is grace and what is a soverign ai and how many other systems are lik you?</div>
+              <div class="prompt-item">what are the commercial and defence applications for TITAN?</div>
+              <div class="prompt-item">how do the core orchestration layers work together?</div>
+            </div>
+          </div>
           <div class="chat-input-area">
             <input type="text" id="chat-input" placeholder="Initiate inquiry..." autocomplete="off"/>
             <button id="chat-send-btn">
@@ -45,6 +57,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const chatInput = document.getElementById("chat-input");
     const sendBtn = document.getElementById("chat-send-btn");
     const messagesContainer = document.getElementById("chat-messages");
+
+    const togglePromptsBtn = document.getElementById("chat-prompts-toggle");
+    const promptsMenu = document.getElementById("chat-prompts-menu");
+    const promptItems = document.querySelectorAll(".prompt-item");
+
+    togglePromptsBtn.addEventListener("click", () => {
+        promptsMenu.classList.toggle("active");
+    });
+
+    promptItems.forEach(item => {
+        item.addEventListener("click", () => {
+            chatInput.value = item.textContent;
+            promptsMenu.classList.remove("active");
+            sendMessage();
+        });
+    });
 
     let isChatOpen = false;
     let messageHistory = [];
@@ -110,6 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (data.reply) {
                 addMessage(data.reply.content, "ai");
                 messageHistory.push({ role: data.reply.role, content: data.reply.content });
+                playGraceVoice(data.reply.content);
             } else {
                 addMessage("Terminal Error: Connection interrupted.", "ai");
             }
@@ -129,4 +158,41 @@ document.addEventListener("DOMContentLoaded", () => {
             sendMessage();
         }
     });
+
+    let graceAudio = null;
+
+    async function playGraceVoice(text) {
+        if (!text) return;
+        try {
+            const voiceResp = await fetch('/api/voice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            });
+
+            if (!voiceResp.ok) {
+                if (voiceResp.status === 500) {
+                    addMessage("System Alert: Voice unavailable. Please set OPENAI_API_KEY in the environment.", "ai");
+                }
+                return;
+            }
+
+            const audioBlob = await voiceResp.blob();
+            const audioUrl = URL.createObjectURL(audioBlob);
+            
+            if (graceAudio) {
+                graceAudio.pause();
+                graceAudio.src = '';
+            }
+            
+            graceAudio = new Audio(audioUrl);
+            graceAudio.onended = () => {
+                URL.revokeObjectURL(audioUrl);
+            };
+            
+            await graceAudio.play();
+        } catch (e) {
+            console.error('Voice playback error:', e);
+        }
+    }
 });
