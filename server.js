@@ -1,10 +1,4 @@
-// Load environment variables from a .env file when available.  A try/catch
-// is used so the app can run even if the 'dotenv' package is not installed.
-try {
-  require('dotenv').config();
-} catch (err) {
-  console.warn('dotenv module not found; skipping .env loading.');
-}
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -15,22 +9,29 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
-// Increase the JSON body limit to allow for larger messages from the client
+// Increase the JSON payload limit to allow for larger messages
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // OpenAI Configuration
 // Only initialize OpenAI if the API key is present
+// Initialise the OpenAI client only if an API key is provided.
+// When the key is missing, chat and voice endpoints will fall back to mock behaviour.
 let openai;
 if (process.env.OPENAI_API_KEY) {
-    openai = new OpenAI({
-        apiKey: process.env.OPENAI_API_KEY,
-    });
+  openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 } else {
-    console.warn("OPENAI_API_KEY is not set in .env. Chatbot will use mock responses.");
+  console.warn('OPENAI_API_KEY is not set in .env. Chat and voice will not work properly.');
 }
 
-// SYSTEM PROMPT: Sales-focused description of GRACE-X and its ecosystem. This replaces the previous creator-centric prompt.
+//
+// SYSTEM PROMPT
+//
+// This prompt defines the "sales-facing" personality for the GRACE‑X AI.
+// It replaces the previous security‑heavy configuration and instead focuses
+// on clearly articulating the GRACE‑X ecosystem, modules and value while
+// maintaining a confident, British tone. This constant is sent to the
+// OpenAI chat completion API as the first system message on every chat.
 const SYSTEM_PROMPT = `
 You are GRACE‑X AI™.
 
@@ -148,7 +149,12 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-// Text‑to‑speech endpoint
+//
+// TEXT TO SPEECH ENDPOINT
+//
+// This endpoint accepts a `text` field in the request body and returns an MP3
+// audio file using OpenAI’s text‑to‑speech API. When the API key is not
+// present, it returns an error informing the client that voice is unavailable.
 app.post('/api/voice', async (req, res) => {
   try {
     const { text } = req.body;
@@ -158,13 +164,17 @@ app.post('/api/voice', async (req, res) => {
     if (!openai) {
       return res.status(500).json({ error: 'OpenAI API key missing. Voice is unavailable until OPENAI_API_KEY is set.' });
     }
-    // Request speech synthesis from OpenAI. See OpenAI docs for supported models/voices.
+    // Request speech synthesis from OpenAI. The model and voice used here may
+    // need adjustment depending on availability. See the OpenAI docs for
+    // supported models and voices. The `tts-1` model with the `alloy` voice
+    // produces a warm, natural sound suitable for GRACE.
     const speechResponse = await openai.audio.speech.create({
       model: 'tts-1',
       voice: 'alloy',
       input: text,
       format: 'mp3'
     });
+    // Convert the ArrayBuffer to a Node.js Buffer
     const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
     res.set({
       'Content-Type': 'audio/mpeg',
