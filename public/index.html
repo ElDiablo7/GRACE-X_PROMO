@@ -427,8 +427,8 @@
       position: absolute;
       inset: 0;
       transform-style: preserve-3d;
-      transform: rotateX(64deg) rotateZ(-10deg) rotateY(0deg) scale(1);
-      transition: transform .08s linear;
+      transform: rotateX(14deg) rotateZ(0deg) rotateY(0deg) scale(1);
+      transition: transform .06s linear;
     }
 
     .plane-ring {
@@ -762,7 +762,7 @@
       opacity: 0.6;
     }
 
-    @keyframes masterFloat { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-12px);} }
+    @keyframes masterFloat { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-8px);} }
     @keyframes corePulse { 0%,100% { transform: scale(1); filter: saturate(1);} 50% { transform: scale(1.045); filter: saturate(1.2);} }
     @keyframes spin { from { transform: rotateZ(0deg);} to { transform: rotateZ(360deg);} }
     @keyframes spinReverse { from { transform: rotateZ(360deg);} to { transform: rotateZ(0deg);} }
@@ -970,8 +970,8 @@
     let activeNodeId = 'core';
     let autoRotate = true;
     let pulseFlow = true;
-    let rotX = 64, rotZ = -10, rotY = 0, zoom = 1;
-    let targetRotX = 64, targetRotZ = -10, targetRotY = 0, targetZoom = 1;
+    let rotX = 14, rotZ = 0, rotY = 0, zoom = 1;
+    let targetRotX = 14, targetRotZ = 0, targetRotY = 0, targetZoom = 1;
     let isDragging = false, lastX = 0, lastY = 0;
     let tourTimer = null;
     let touring = false;
@@ -1161,8 +1161,8 @@
     });
 
     resetViewBtn.addEventListener('click', () => {
-      targetRotX = 64;
-      targetRotZ = -10;
+      targetRotX = 14;
+      targetRotZ = 0;
       targetRotY = 0;
       targetZoom = 1;
     });
@@ -1185,9 +1185,9 @@
       const dy = e.clientY - lastY;
       lastX = e.clientX;
       lastY = e.clientY;
-      targetRotY += dx * 0.25;
-      targetRotX = Math.max(38, Math.min(84, targetRotX - dy * 0.12));
-      targetRotZ = Math.max(-25, Math.min(18, targetRotZ + dx * 0.04));
+      targetRotY += dx * 0.28;
+      targetRotX = Math.max(-10, Math.min(80, targetRotX - dy * 0.14));
+      targetRotZ = Math.max(-20, Math.min(20, targetRotZ + dx * 0.03));
     });
 
     const stopDrag = () => {
@@ -1206,7 +1206,7 @@
     }, { passive: false });
 
     function animate() {
-      if (autoRotate && !isDragging && !touring) targetRotY += 0.12;
+      if (autoRotate && !isDragging && !touring) targetRotY += 0.08;
       rotX += (targetRotX - rotX) * 0.08;
       rotZ += (targetRotZ - rotZ) * 0.08;
       rotY += (targetRotY - rotY) * 0.08;
