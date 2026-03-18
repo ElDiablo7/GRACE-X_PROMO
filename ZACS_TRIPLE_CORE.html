@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRACE-X VI Triple Core Architecture</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #0f0f1a 100%);
+      font-family: 'JetBrains Mono', monospace;
+      color: #e0e0e0;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+      padding-bottom: 20px;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      background: linear-gradient(135deg, #d4af37 0%, #f4d03f 50%, #d4af37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 40px rgba(212, 175, 55, 0.3);
+    }
+    
+    .subtitle {
+      font-size: 0.9rem;
+      letter-spacing: 0.5em;
+      color: #888;
+      margin-top: 10px;
+    }
+    
+    .info-panel {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .info-box {
+      padding: 15px 25px;
+      border-radius: 8px;
+    }
+    
+    .info-box.gold {
+      background: rgba(212, 175, 55, 0.1);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+    
+    .info-box.blue {
+      background: rgba(100, 200, 255, 0.1);
+      border: 1px solid rgba(100, 200, 255, 0.3);
+    }
+    
+    .info-box.green {
+      background: rgba(150, 255, 150, 0.1);
+      border: 1px solid rgba(150, 255, 150, 0.3);
+    }
+    
+    .info-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+    }
+    
+    .info-value {
+      font-size: 1.5rem;
+    }
+    
+    .gold-text { color: #d4af37; }
+    .gold-value { color: #f4d03f; }
+    .blue-text { color: #64c8ff; }
+    .green-text { color: #96ff96; }
+    .purple-text { color: #c864ff; }
+    .orange-text { color: #ffc864; }
+    
+    .main-container {
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .triangle-svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 500px;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .eye-container {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+    
+    .eye {
+      background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%);
+      border: 3px solid #d4af37;
+      border-radius: 50%;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 
+        0 0 30px rgba(212, 175, 55, 0.5),
+        0 0 60px rgba(212, 175, 55, 0.3),
+        inset 0 0 30px rgba(212, 175, 55, 0.1);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
+    @keyframes flow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -30; }
+    }
+    
+    .eye-icon {
+      font-size: 3rem;
+      margin-bottom: 5px;
+    }
+    
+    .eye-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #d4af37;
+      letter-spacing: 0.2em;
+    }
+    
+    .eye-subtitle {
+      font-size: 0.7rem;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    .eye-power {
+      font-size: 1.5rem;
+      color: #f4d03f;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    
+    .eye-power-label {
+      font-size: 0.6rem;
+      color: #666;
+    }
+    
+    .cores-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .core {
+      min-width: 300px;
+    }
+    
+    .core-2 { flex: 0.618; }
+    .core-3 { flex: 0.382; min-width: 250px; }
+    
+    .core-header {
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .core-2 .core-header {
+      background: linear-gradient(135deg, #0f1a2e 0%, #1a2a4e 100%);
+      border: 2px solid #64c8ff;
+      box-shadow: 0 0 30px rgba(100, 200, 255, 0.2);
+    }
+    
+    .core-3 .core-header {
+      background: linear-gradient(135deg, #1a0f2e 0%, #2a1a4e 100%);
+      border: 2px solid #c864ff;
+      box-shadow: 0 0 30px rgba(200, 100, 255, 0.2);
+    }
+    
+    .core-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      padding-bottom: 15px;
+    }
+    
+    .core-2 .core-title-row {
+      border-bottom-color: rgba(100, 200, 255, 0.3);
+    }
+    
+    .core-3 .core-title-row {
+      border-bottom-color: rgba(200, 100, 255, 0.3);
+    }
+    
+    .core-title {
+      font-size: 1.3rem;
+      letter-spacing: 0.15em;
+      margin: 0;
+    }
+    
+    .core-subtitle {
+      font-size: 0.75rem;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    .core-power {
+      font-size: 1.8rem;
+      font-weight: bold;
+    }
+    
+    .core-power-label {
+      font-size: 0.6rem;
+      color: #666;
+    }
+    
+    .core-stats {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-radius: 8px;
+    }
+    
+    .core-2 .core-stats {
+      background: rgba(100, 200, 255, 0.1);
+    }
+    
+    .core-3 .core-stats {
+      background: rgba(200, 100, 255, 0.1);
+    }
+    
+    .stat-value {
+      font-size: 1.5rem;
+    }
+    
+    .stat-label {
+      font-size: 0.6rem;
+      color: #888;
+    }
+    
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    
+    .agent {
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 0.65rem;
+    }
+    
+    .agent.module-blue {
+      background: rgba(100, 200, 255, 0.15);
+      border: 1px solid rgba(100, 200, 255, 0.4);
+    }
+    
+    .agent.module-purple {
+      background: rgba(200, 100, 255, 0.15);
+      border: 1px solid rgba(200, 100, 255, 0.4);
+    }
+    
+    .agent.system {
+      background: rgba(150, 255, 150, 0.15);
+      border: 1px solid rgba(150, 255, 150, 0.4);
+    }
+    
+    .agent.crew {
+      background: rgba(255, 200, 100, 0.15);
+      border: 1px solid rgba(255, 200, 100, 0.4);
+    }
+    
+    .agent-name {
+      font-weight: bold;
+      margin-bottom: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .agent-domain {
+      color: #666;
+      font-size: 0.55rem;
+    }
+    
+    .legend {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+    
+    .legend-label {
+      font-size: 0.75rem;
+      color: #888;
+    }
+    
+    .math-panel {
+      margin-top: 40px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(244, 208, 63, 0.05) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+    }
+    
+    .math-title {
+      margin: 0 0 20px 0;
+      color: #d4af37;
+      letter-spacing: 0.2em;
+      font-size: 1rem;
+      text-align: center;
+    }
+    
+    .math-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    
+    .math-box {
+      background: rgba(0,0,0,0.3);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 3px solid;
+    }
+    
+    .math-box.gold { border-left-color: #d4af37; }
+    .math-box.blue { border-left-color: #64c8ff; }
+    .math-box.green { border-left-color: #96ff96; }
+    
+    .math-label {
+      font-size: 0.8rem;
+      margin-bottom: 10px;
+    }
+    
+    .math-content {
+      font-size: 0.85rem;
+      line-height: 1.8;
+    }
+    
+    .flow-panel {
+      margin-top: 30px;
+      text-align: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.3);
+      borderRadius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+    }
+    
+    .flow-title {
+      color: #d4af37;
+      margin: 0 0 15px 0;
+      letter-spacing: 0.15em;
+    }
+    
+    .flow-steps {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
+      color: #888;
+    }
+    
+    .flow-arrow {
+      color: #d4af37;
+    }
+    
+    .flow-note {
+      margin-top: 15px;
+      color: #666;
+      font-size: 0.75rem;
+    }
+    
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      color: #555;
+      font-size: 0.7rem;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      padding-top: 20px;
+    }
+    
+    .footer-brand {
+      color: #d4af37;
+      margin-bottom: 5px;
+    }
+    
+    .footer-quote {
+      margin-top: 10px;
+      color: #444;
+      font-style: italic;
+    }
+    
+    @media (max-width: 768px) {
+      .cores-container {
+        flex-direction: column;
+      }
+      .core-2, .core-3 {
+        flex: 1;
+        min-width: 100%;
+      }
+      .info-panel {
+        gap: 15px;
+      }
+      h1 {
+        font-size: 1.8rem;
+        letter-spacing: 0.15em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>GRACE-X VI</h1>
+    <p class="subtitle">TRIPLE CORE ARCHITECTURE • φ = 1.618</p>
+  </header>
+
+  <div class="info-panel">
+    <div class="info-box gold">
+      <div class="info-label gold-text">GOLDEN RATIO</div>
+      <div class="info-value gold-value">φ = 1.618033...</div>
+    </div>
+    <div class="info-box blue">
+      <div class="info-label blue-text">POWER RATIO</div>
+      <div class="info-value blue-text">8 : 5 : 3</div>
+    </div>
+    <div class="info-box green">
+      <div class="info-label green-text">AGENT RATIO</div>
+      <div class="info-value green-text">20 : 13</div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <!-- SVG Triangle -->
+    <svg class="triangle-svg" viewBox="0 0 1200 500" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#d4af37" stop-opacity="0.6"/>
+          <stop offset="50%" stop-color="#f4d03f" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#d4af37" stop-opacity="0.6"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+      <!-- Triangle Frame -->
+      <polygon points="600,30 200,400 1000,400" fill="none" stroke="url(#goldGrad)" stroke-width="2" filter="url(#glow)"/>
+      
+      <!-- Tesseract Conduits -->
+      <line x1="600" y1="80" x2="300" y2="350" stroke="#d4af37" stroke-width="3" opacity="0.7" filter="url(#glow)" stroke-dasharray="10,5" style="animation: flow 1s linear infinite"/>
+      <line x1="600" y1="80" x2="900" y2="350" stroke="#d4af37" stroke-width="3" opacity="0.7" filter="url(#glow)" stroke-dasharray="10,5" style="animation: flow 1s linear infinite"/>
+      <line x1="350" y1="380" x2="850" y2="380" stroke="#d4af37" stroke-width="2" opacity="0.5" filter="url(#glow)" stroke-dasharray="8,4"/>
+    </svg>
+
+    <!-- THE EYE -->
+    <div class="eye-container">
+      <div class="eye">
+        <div class="eye-icon">👁️</div>
+        <div class="eye-title">THE EYE</div>
+        <div class="eye-subtitle">MASTER ORCHESTRATOR</div>
+        <div class="eye-power">50%</div>
+        <div class="eye-power-label">PROCESSING POWER</div>
+      </div>
+    </div>
+
+    <!-- Cores -->
+    <div class="cores-container">
+      <!-- CORE 2 -->
+      <div class="core core-2">
+        <div class="core-header">
+          <div class="core-title-row">
+            <div>
+              <h2 class="core-title blue-text">⚡ CORE 2</h2>
+              <div class="core-subtitle">ANALYTICS ENGINE</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="core-power blue-text">31.25%</div>
+              <div class="core-power-label">POWER</div>
+            </div>
+          </div>
+          <div class="core-stats">
+            <div>
+              <div class="stat-value blue-text">20</div>
+              <div class="stat-label">AGENTS</div>
+            </div>
+            <div>
+              <div class="stat-value gold-value">φ × 13</div>
+              <div class="stat-label">≈ 20</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="agents-grid">
+          <!-- Modules -->
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Core</div><div class="agent-domain">Orchestration</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Forge</div><div class="agent-domain">Development</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Sport</div><div class="agent-domain">Analytics</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X OSINT</div><div class="agent-domain">Intelligence</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Accounting</div><div class="agent-domain">Finance</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Builder</div><div class="agent-domain">Development</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X TradeLink</div><div class="agent-domain">Business</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Guardian</div><div class="agent-domain">Security</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X SiteOps</div><div class="agent-domain">Operations</div></div>
+          <div class="agent module-blue"><div class="agent-name blue-text">GRACE-X Family</div><div class="agent-domain">Coordination</div></div>
+          <!-- System Agents -->
+          <div class="agent system"><div class="agent-name green-text">Analytics Agent</div><div class="agent-domain">Deep Inspection</div></div>
+          <div class="agent system"><div class="agent-name green-text">Database Agent</div><div class="agent-domain">Data Management</div></div>
+          <div class="agent system"><div class="agent-name green-text">Logic Agent</div><div class="agent-domain">Reasoning</div></div>
+          <div class="agent system"><div class="agent-name green-text">Security Agent</div><div class="agent-domain">Protection</div></div>
+          <div class="agent system"><div class="agent-name green-text">Search Agent</div><div class="agent-domain">Query Processing</div></div>
+          <!-- AI Crew -->
+          <div class="agent crew"><div class="agent-name orange-text">Analyst Alpha</div><div class="agent-domain">Data Analysis</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Analyst Beta</div><div class="agent-domain">Pattern Recognition</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Analyst Gamma</div><div class="agent-domain">Trend Detection</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Analyst Delta</div><div class="agent-domain">Risk Assessment</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Analyst Epsilon</div><div class="agent-domain">Forecasting</div></div>
+        </div>
+      </div>
+
+      <!-- CORE 3 -->
+      <div class="core core-3">
+        <div class="core-header">
+          <div class="core-title-row">
+            <div>
+              <h2 class="core-title purple-text">🔮 CORE 3</h2>
+              <div class="core-subtitle">PROCESSING ENGINE</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="core-power purple-text">18.75%</div>
+              <div class="core-power-label">POWER</div>
+            </div>
+          </div>
+          <div class="core-stats">
+            <div>
+              <div class="stat-value purple-text">13</div>
+              <div class="stat-label">AGENTS</div>
+            </div>
+            <div>
+              <div class="stat-value gold-value">13</div>
+              <div class="stat-label">FIBONACCI</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="agents-grid">
+          <!-- Modules -->
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Uplift</div><div class="agent-domain">Wellness</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Fit</div><div class="agent-domain">Fitness</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Yoga</div><div class="agent-domain">Mindfulness</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Chef</div><div class="agent-domain">Culinary</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Beauty</div><div class="agent-domain">Aesthetics</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Artist</div><div class="agent-domain">Creative</div></div>
+          <div class="agent module-purple"><div class="agent-name purple-text">GRACE-X Gamer</div><div class="agent-domain">Gaming</div></div>
+          <!-- System Agents -->
+          <div class="agent system"><div class="agent-name green-text">RAM Agent Alpha</div><div class="agent-domain">Memory Bank 1</div></div>
+          <div class="agent system"><div class="agent-name green-text">RAM Agent Beta</div><div class="agent-domain">Memory Bank 2</div></div>
+          <div class="agent system"><div class="agent-name green-text">Network Agent</div><div class="agent-domain">Communications</div></div>
+          <!-- AI Crew -->
+          <div class="agent crew"><div class="agent-name orange-text">Processor Zeta</div><div class="agent-domain">Task Execution</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Processor Eta</div><div class="agent-domain">Output Generation</div></div>
+          <div class="agent crew"><div class="agent-name orange-text">Processor Theta</div><div class="agent-domain">Response Synthesis</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color" style="background: #64c8ff;"></div>
+        <span class="legend-label">Specialized Modules (Core 2)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #c864ff;"></div>
+        <span class="legend-label">Specialized Modules (Core 3)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #96ff96;"></div>
+        <span class="legend-label">System Agents</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color" style="background: #ffc864;"></div>
+        <span class="legend-label">AI Crew Members</span>
+      </div>
+    </div>
+
+    <!-- Math Panel -->
+    <div class="math-panel">
+      <h3 class="math-title">⚖️ GOLDEN RATIO DISTRIBUTION MATHEMATICS</h3>
+      
+      <div class="math-grid">
+        <div class="math-box gold">
+          <div class="math-label gold-text">POWER DISTRIBUTION</div>
+          <div class="math-content">
+            Fibonacci: <span class="gold-value">8 : 5 : 3</span> = 16 parts<br>
+            The Eye: <span class="gold-value">8/16</span> = <span class="blue-text">50.00%</span><br>
+            Core 2: <span class="gold-value">5/16</span> = <span class="blue-text">31.25%</span><br>
+            Core 3: <span class="gold-value">3/16</span> = <span class="blue-text">18.75%</span><br>
+            <br>
+            <span style="color: #888;">Ratio 8:5 = <span class="gold-text">1.600</span> ≈ φ</span><br>
+            <span style="color: #888;">Ratio 5:3 = <span class="gold-text">1.667</span> ≈ φ</span>
+          </div>
+        </div>
+        
+        <div class="math-box blue">
+          <div class="math-label blue-text">AGENT DISTRIBUTION</div>
+          <div class="math-content">
+            Total Agents: <span class="gold-value">33</span><br>
+            Core 2: <span class="gold-value">33 / φ</span> = <span class="blue-text">20.4</span> → <span class="green-text">20</span><br>
+            Core 3: <span class="gold-value">33 - 20</span> = <span class="purple-text">13</span><br>
+            <br>
+            <span style="color: #888;">Ratio: <span class="gold-text">20/13 = 1.538</span> ≈ φ</span><br>
+            <span style="color: #888;">Fibonacci sequence: ...8, 13, <span class="gold-text">21</span>...</span>
+          </div>
+        </div>
+        
+        <div class="math-box green">
+          <div class="math-label green-text">COMPONENT BREAKDOWN</div>
+          <div class="math-content">
+            The Eye: <span class="gold-text">1</span> Master<br>
+            Specialized Modules: <span class="blue-text">17</span><br>
+            System Agents: <span class="green-text">8</span><br>
+            AI Crew: <span class="orange-text">8</span><br>
+            <br>
+            <span style="border-top: 1px solid #333; padding-top: 10px; display: block;">
+              Total: <span class="gold-text" style="font-size: 1.1rem;">34</span> <span style="color: #888;">(Fibonacci)</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flow Panel -->
+    <div class="flow-panel">
+      <h4 class="flow-title">⟁ TESSERACT CONDUIT FLOW</h4>
+      <div class="flow-steps">
+        <span>👁️ The Eye receives ALL queries</span>
+        <span class="flow-arrow">→</span>
+        <span>Routes to appropriate Core</span>
+        <span class="flow-arrow">→</span>
+        <span>Cores delegate to Agents</span>
+        <span class="flow-arrow">→</span>
+        <span>Results flow back to Eye</span>
+      </div>
+      <div class="flow-note">
+        Agents can ONLY communicate through their assigned Core — bulletproof hierarchical control
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-brand">GRACE-X AI™ • FOR THE PEOPLE™</div>
+      <div>© 2025 Zachary Charles Anthony Crockett — All Rights Reserved</div>
+      <div class="footer-quote">"φ is in everything. Why would AI be different?"</div>
+    </footer>
+  </div>
+</body>
+</html>
