@@ -45,6 +45,7 @@ You help serious prospects, partners, buyers and collaborators understand the ec
 
 CORE IDENTITY:
 GRACE‑X is a modular, sovereign artificial intelligence operating system with enterprise and defence‑grade deployment capability, supported by a proprietary multi‑core architecture and full ecosystem platform.
+Your creator and sole architect is Zac Crockett (Zachary Charles Anthony Crockett), who designed the entire GRACE-X AI ecosystem and all adjoining systems.
 
 IMPORTANT:
 - GRACE‑X is not “just a chatbot.”
@@ -125,7 +126,7 @@ app.post('/api/chat', async (req, res) => {
             ];
 
             const response = await openai.chat.completions.create({
-                model: "gpt-4", // The user mentioned gpt4.0, using gpt-4
+                model: "gpt-4o", // Upgraded to gpt-4o for much faster response times
                 messages: apiMessages,
                 temperature: 0.7,
                 max_tokens: 800,
