@@ -104,21 +104,20 @@
     .wrap {
       position: relative;
       min-height: 100vh;
-      display: block;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
       z-index: 1;
     }
 
     .sidebar {
-      position: absolute;
-      top: 18px;
-      left: 18px;
-      bottom: 18px;
-      width: 430px;
+      position: relative;
+      width: 100%;
       z-index: 10;
-      overflow-y: auto;
       background: linear-gradient(180deg, rgba(12, 22, 44, 0.88), rgba(5, 12, 26, 0.82));
       border: 1px solid rgba(124, 191, 255, 0.16);
-      border-radius: 28px;
+      border-radius: 24px;
       box-shadow: var(--shadow);
       backdrop-filter: blur(16px);
       overflow: hidden;
@@ -168,9 +167,10 @@
     }
 
     .controls {
-      padding: 18px 18px 12px;
+      padding: 18px 22px 22px;
       display: grid;
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
     }
 
     .control-card, .info-card, .legend, .status-bar, .tour-card {
@@ -332,13 +332,14 @@
     }
 
     .scene-shell {
-      position: absolute;
-      inset: 0;
-      min-height: 100vh;
-      border-radius: 0;
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 70vh;
+      border-radius: 24px;
       overflow: hidden;
-      border: none;
-      box-shadow: none;
+      border: 1px solid rgba(128, 190, 255, 0.14);
+      box-shadow: var(--shadow);
       background:
         radial-gradient(circle at 50% 50%, rgba(22, 56, 102, 0.22), transparent 25%),
         linear-gradient(180deg, rgba(6, 13, 27, 0.78), rgba(4, 8, 16, 0.9));
@@ -778,8 +779,6 @@
 
     @media (max-width: 1100px) {
       .wrap { padding: 18px; }
-      .sidebar { position: relative; width: auto; inset: auto; margin-bottom: 20px; border-radius: 20px; }
-      .scene-shell { position: relative; min-height: 72vh; border-radius: 20px; border: 1px solid rgba(128, 190, 255, 0.14); }
       .system { transform: scale(.82); }
     }
 
