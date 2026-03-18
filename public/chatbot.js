@@ -164,21 +164,21 @@ document.addEventListener("DOMContentLoaded", () => {
     async function playGraceVoice(text) {
         if (!text) return;
         try {
-            const voiceResp = await fetch('/api/voice', {
+            const initResp = await fetch('/api/voice/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             });
 
-            if (!voiceResp.ok) {
-                if (voiceResp.status === 500) {
+            if (!initResp.ok) {
+                if (initResp.status === 500) {
                     addMessage("System Alert: Voice unavailable. Please set OPENAI_API_KEY in the environment.", "ai");
                 }
                 return;
             }
 
-            const audioBlob = await voiceResp.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
+            const { id } = await initResp.json();
+            const audioUrl = `/api/voice/stream?id=${id}`;
             
             if (graceAudio) {
                 graceAudio.pause();
@@ -186,10 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             
             graceAudio = new Audio(audioUrl);
-            graceAudio.onended = () => {
-                URL.revokeObjectURL(audioUrl);
-            };
-            
             await graceAudio.play();
         } catch (e) {
             console.error('Voice playback error:', e);

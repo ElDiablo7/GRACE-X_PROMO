@@ -153,29 +153,78 @@ app.post('/api/chat', async (req, res) => {
 //
 // TEXT TO SPEECH ENDPOINT
 //
-// This endpoint accepts a `text` field in the request body and returns an MP3
-// audio file using OpenAI’s text‑to‑speech API. When the API key is not
-// present, it returns an error informing the client that voice is unavailable.
-app.post('/api/voice', async (req, res) => {
+
+const voiceJobs = new Map();
+
+app.post('/api/voice/generate', (req, res) => {
+  const { text } = req.body;
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'Text is required.' });
+  }
+  if (!openai) {
+    return res.status(500).json({ error: 'OpenAI API key missing. Voice is unavailable until OPENAI_API_KEY is set.' });
+  }
+  const id = Date.now().toString() + Math.random().toString();
+  voiceJobs.set(id, text);
+  setTimeout(() => voiceJobs.delete(id), 120000); // cleanup
+  res.json({ id });
+});
+
+app.get('/api/voice/stream', async (req, res) => {
+  const { id } = req.query;
+  const text = voiceJobs.get(id);
+  if (!text) return res.status(404).send('Not found');
+  
+  voiceJobs.delete(id);
+
   try {
-    const { text } = req.body;
-    if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Text is required.' });
-    }
-    if (!openai) {
-      return res.status(500).json({ error: 'OpenAI API key missing. Voice is unavailable until OPENAI_API_KEY is set.' });
-    }
-    // Request speech synthesis from OpenAI. The model and voice used here may
-    // need adjustment depending on availability. See the OpenAI docs for
-    // supported models and voices. The `tts-1` model with the `alloy` voice
-    // produces a warm, natural sound suitable for GRACE.
     const speechResponse = await openai.audio.speech.create({
       model: 'tts-1',
       voice: 'alloy',
       input: text,
-      format: 'mp3'
+      speed: 1.14, // Sped up as requested
+      response_format: 'mp3'
     });
-    // Convert the ArrayBuffer to a Node.js Buffer
+
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Transfer-Encoding': 'chunked',
+      'Cache-Control': 'no-store'
+    });
+
+    if (speechResponse.body && typeof speechResponse.body.getReader === 'function') {
+      const reader = speechResponse.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
+    } else if (speechResponse.body) {
+      speechResponse.body.pipe(res);
+    } else {
+      const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
+      res.send(audioBuffer);
+    }
+  } catch (error) {
+    console.error('Voice Streaming Error:', error);
+    res.end();
+  }
+});
+
+app.post('/api/voice', async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || typeof text !== 'string') return res.status(400).json({ error: 'Text is required.' });
+    if (!openai) return res.status(500).json({ error: 'OpenAI API key missing.' });
+    
+    const speechResponse = await openai.audio.speech.create({
+      model: 'tts-1',
+      voice: 'alloy',
+      input: text,
+      speed: 1.14,
+      response_format: 'mp3'
+    });
     const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
     res.set({
       'Content-Type': 'audio/mpeg',
