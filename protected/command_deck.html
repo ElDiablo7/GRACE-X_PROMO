@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GRACE-X Rolls-Royce Sovereign Command Deck</title>
+<style>
+  :root{
+    --bg:#03050a;
+    --panel:rgba(8,12,22,.76);
+    --panel2:rgba(14,20,34,.92);
+    --line:rgba(255,255,255,.08);
+    --line-strong:rgba(255,255,255,.18);
+    --text:#eef3ff;
+    --muted:#9aabca;
+    --gold:#f4d03f;
+    --gold2:#fff1ad;
+    --blue:#61c8ff;
+    --purple:#c864ff;
+    --green:#8dffb3;
+    --orange:#ffc864;
+    --red:#ff6b6b;
+    --chrome1:#d7e4ff;
+    --chrome2:#7587a8;
+    --chrome3:#f7fbff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#11192c 0%,#070a12 42%,#03050a 100%);color:var(--text)}
+  button{font:inherit}
+  #app{position:fixed;inset:0;overflow:hidden;background:
+    radial-gradient(circle at 20% 12%, rgba(97,200,255,.10), transparent 20%),
+    radial-gradient(circle at 78% 14%, rgba(200,100,255,.10), transparent 22%),
+    radial-gradient(circle at 50% 0%, rgba(244,208,63,.09), transparent 30%),
+    linear-gradient(180deg,#090d18 0%,#04070d 100%)}
+
+  .sceneWrap{position:absolute;inset:0;perspective:2100px;perspective-origin:50% 42%;overflow:hidden}
+  .scene{position:absolute;left:50%;top:52%;width:130vw;height:130vh;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateX(72deg) rotateZ(0deg) scale(1.03);transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+  .spaceGlow,.grid,.rings,.links,.nodes,.scanlines,.pulsePlane,.sectorRings,.floorText{position:absolute;inset:0;transform-style:preserve-3d}
+  .spaceGlow{background:radial-gradient(circle at center, rgba(255,255,255,.02), transparent 28%),radial-gradient(circle at center, rgba(97,200,255,.08), transparent 48%),radial-gradient(circle at center, rgba(200,100,255,.05), transparent 62%);transform:translateZ(-260px) scale(1.15);filter:blur(20px)}
+  .grid{background:linear-gradient(rgba(97,200,255,.08) 1px, transparent 1px),linear-gradient(90deg, rgba(97,200,255,.08) 1px, transparent 1px);background-size:70px 70px;transform:translateZ(-220px);box-shadow:inset 0 0 120px rgba(97,200,255,.05),0 0 120px rgba(97,200,255,.08)}
+  .scanlines{background:repeating-linear-gradient(180deg, rgba(255,255,255,.016) 0 2px, transparent 2px 8px);transform:translateZ(250px);pointer-events:none;mix-blend-mode:screen;opacity:.45}
+  .pulsePlane{background:radial-gradient(circle at center, rgba(244,208,63,.08), transparent 26%);transform:translateZ(-120px) scale(1.08);filter:blur(12px);animation:pulsePlane 4.8s ease-in-out infinite;pointer-events:none}
+  @keyframes pulsePlane{0%,100%{opacity:.30;transform:translateZ(-120px) scale(1.02)}50%{opacity:.65;transform:translateZ(-120px) scale(1.10)}}
+  .ring{position:absolute;left:50%;top:50%;border-radius:50%;border:1px solid rgba(244,208,63,.16);box-shadow:0 0 40px rgba(244,208,63,.06), inset 0 0 30px rgba(244,208,63,.03)}
+  .ring.r1{width:340px;height:340px;transform:translate(-50%,-50%) translateZ(-18px)}
+  .ring.r2{width:620px;height:620px;transform:translate(-50%,-50%) translateZ(-70px);border-color:rgba(244,208,63,.10)}
+  .ring.r3{width:920px;height:920px;transform:translate(-50%,-50%) translateZ(-160px);border-color:rgba(97,200,255,.08)}
+  .sectorRing{position:absolute;left:50%;top:50%;border-radius:50%;border:1px dashed rgba(255,255,255,.06)}
+  .sectorRing.s1{width:1260px;height:1260px;transform:translate(-50%,-50%) translateZ(-220px)}
+  .sectorRing.s2{width:1540px;height:1540px;transform:translate(-50%,-50%) translateZ(-260px)}
+  .floorLabel{position:absolute;padding:8px 12px;border-radius:999px;background:rgba(8,12,20,.62);border:1px solid rgba(255,255,255,.08);font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--muted);white-space:nowrap;transform:translateZ(-165px)}
+  .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.75;box-shadow:0 0 10px #fff}
+
+  .hudCard{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:var(--panel);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.36)}
+  .topbar{position:fixed;left:14px;right:14px;top:14px;z-index:30;min-height:78px;border-radius:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+  .brand h1{font-size:clamp(1rem,2vw,1.55rem);letter-spacing:.18em;font-weight:900;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .brand .sub{margin-top:6px;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.pill{min-width:112px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+  .pill .k{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.pill .v{margin-top:4px;font-weight:800}
+
+  .leftRail{position:fixed;left:14px;top:104px;bottom:14px;width:318px;z-index:30;border-radius:20px;padding:14px;overflow:auto}
+  .rightRail{position:fixed;right:14px;top:104px;bottom:116px;width:356px;z-index:30;border-radius:20px;padding:14px;overflow:auto}
+  .bottomDock{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:min(1180px,calc(100vw - 28px));z-index:30;border-radius:18px;padding:10px}
+  .miniTopRight{position:fixed;right:14px;bottom:14px;width:356px;z-index:30;border-radius:18px;padding:12px}
+  .centerPlate{position:fixed;left:50%;top:118px;transform:translateX(-50%);z-index:31;width:410px;pointer-events:none}
+  .plate{border-radius:22px;padding:14px 18px;background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 46px rgba(0,0,0,.38);backdrop-filter:blur(12px)}
+  .plate .crest{display:flex;align-items:center;gap:14px}
+  .plate .logo{width:54px;height:54px;border-radius:16px;background:radial-gradient(circle at 35% 30%, var(--chrome3), var(--chrome1) 38%, var(--chrome2) 78%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 10px 24px rgba(0,0,0,.35);position:relative}
+  .plate .logo:before,.plate .logo:after{content:'';position:absolute;inset:9px;border-radius:12px;border:2px solid rgba(10,16,28,.18)}
+  .plate .logo:after{inset:18px;border-radius:10px;border-color:rgba(10,16,28,.28)}
+  .plate .headline{font-size:1rem;font-weight:900;letter-spacing:.14em;background:linear-gradient(90deg,#f8fbff,#d3e2ff,#f8fbff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .plate .subline{margin-top:4px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:#d7e1f5}
+
+  .sectionTitle{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.sectionTitle h3{font-size:.92rem;letter-spacing:.12em;text-transform:uppercase}.badge{padding:6px 10px;border-radius:999px;font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;border:1px solid rgba(255,255,255,.12);color:var(--muted)}
+  .selected{padding:14px;border-radius:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}.selected .name{font-size:1.05rem;font-weight:900;margin-bottom:4px}.selected .role{font-size:.88rem;color:var(--muted);margin-bottom:12px;line-height:1.45}
+  .gridInfo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mini{padding:10px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}.mini .label{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em}.mini .value{margin-top:5px;font-weight:800;font-size:.95rem}
+  .meterWrap{margin-top:12px;display:grid;gap:8px}.meterRow{display:grid;grid-template-columns:92px 1fr 50px;gap:8px;align-items:center}.meterRow .mLabel{font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em}.bar{height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid rgba(255,255,255,.06)}.fill{height:100%;width:0;border-radius:999px;transition:width .35s ease}.barGold{background:linear-gradient(90deg,#9b7e1b,var(--gold),#fff0ad)}.barBlue{background:linear-gradient(90deg,#0d5b82,var(--blue),#b0e8ff)}.barPurple{background:linear-gradient(90deg,#6a1a8e,var(--purple),#efccff)}.meterRow .pct{font-size:.82rem;font-weight:800;text-align:right}
+  .legend,.feed,.compareGrid,.metricGrid{display:grid;gap:8px}.legendItem{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.85rem}.dot{width:12px;height:12px;border-radius:50%;box-shadow:0 0 16px currentColor}
+  .tree{display:grid;gap:8px}.chip,.toolbar button,.toggleBtn,.modeBtn,.tabBtn,.sectorBtn{appearance:none;border:none;cursor:pointer;color:var(--text);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);transition:.18s ease}.chip{width:100%;text-align:left;border-radius:14px;padding:11px 12px}.chip:hover,.toolbar button:hover,.toggleBtn:hover,.modeBtn:hover,.tabBtn:hover,.sectorBtn:hover{transform:translateY(-1px);background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18)}.chip.active,.modeBtn.active,.toggleBtn.active,.tabBtn.active,.sectorBtn.active{outline:1px solid currentColor}.title{font-weight:800;margin-bottom:4px}.meta{color:var(--muted);font-size:.78rem}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}.toolbar button,.toggleBtn,.modeBtn,.tabBtn,.sectorBtn{padding:10px 13px;border-radius:12px;font-weight:800}.modeRow,.tabRow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.sectorRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .feedItem,.compareCard,.metricCard{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)}.feedItem .top,.compareCard .top,.metricCard .top{display:flex;justify-content:space-between;gap:10px;margin-bottom:4px}.feedItem .t,.compareCard .t,.metricCard .t{font-size:.78rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}.feedItem .s,.compareCard .s,.metricCard .s{font-size:.75rem;font-weight:800}.feedItem p,.compareCard p,.metricCard p{font-size:.84rem;line-height:1.45;color:#dce6ff}
+  .compareGrid{margin-top:8px}.check{color:var(--green);font-weight:900}.cross{color:var(--red);font-weight:900}.lineRow{display:grid;grid-template-columns:1fr 24px 24px;gap:8px;align-items:center;font-size:.82rem;color:#dce6ff;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+  .metricGrid{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:8px}
+
+  .node{position:absolute;transform-style:preserve-3d;translate:-50% -50%;cursor:pointer;transition:filter .22s ease, transform .22s ease}.node:hover{filter:brightness(1.18)}.node.active{filter:brightness(1.32) saturate(1.15)}
+  .ball{position:absolute;left:50%;top:50%;translate:-50% -50%;border-radius:50%;box-shadow:0 0 28px currentColor,0 0 70px color-mix(in srgb, currentColor 40%, transparent)}.ball::before{content:'';position:absolute;inset:8%;border-radius:50%;background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.95), rgba(255,255,255,.2) 18%, transparent 42%)}.ball::after{content:'';position:absolute;inset:-18%;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 55%, transparent);opacity:.62}
+  .master .ball{width:104px;height:104px;background:radial-gradient(circle at 35% 30%, #fff9de 0%, var(--gold) 34%, #a27916 72%, rgba(0,0,0,.12) 100%)}.core .ball{width:70px;height:70px}.module .ball{width:30px;height:30px}.system .ball{width:22px;height:22px}.crew .ball{width:16px;height:16px}
+  .node.blue .ball{background:radial-gradient(circle at 35% 30%, #e8f9ff 0%, var(--blue) 34%, #0b5d80 76%, rgba(0,0,0,.12) 100%)}.node.purple .ball{background:radial-gradient(circle at 35% 30%, #f6e6ff 0%, var(--purple) 34%, #64158c 76%, rgba(0,0,0,.12) 100%)}.node.green .ball{background:radial-gradient(circle at 35% 30%, #f1fff6 0%, var(--green) 34%, #2a7e4a 76%, rgba(0,0,0,.12) 100%)}.node.orange .ball{background:radial-gradient(circle at 35% 30%, #fff3de 0%, var(--orange) 34%, #94611e 76%, rgba(0,0,0,.12) 100%)}
+  .halo{position:absolute;left:50%;top:50%;translate:-50% -50%;border-radius:50%;border:1px solid color-mix(in srgb, currentColor 44%, transparent);opacity:.55}.master .halo{width:158px;height:158px}.core .halo{width:112px;height:112px}.module .halo,.system .halo,.crew .halo{display:none}
+  .shadow{position:absolute;left:50%;top:50%;translate:-50% -50%;width:150%;height:34%;border-radius:50%;background:radial-gradient(circle, rgba(0,0,0,.42), transparent 70%);transform:translateZ(-100px) scale(1.16)}
+  .statusDot{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;border:1px solid rgba(255,255,255,.25);box-shadow:0 0 12px currentColor;background:currentColor}.label{position:absolute;left:50%;top:50%;translate:-50% calc(-100% - 21px);padding:7px 10px;border-radius:999px;background:rgba(8,12,20,.84);border:1px solid rgba(255,255,255,.1);font-size:.72rem;font-weight:800;letter-spacing:.05em;white-space:nowrap;box-shadow:0 10px 25px rgba(0,0,0,.22)}.detailLabel{position:absolute;left:50%;top:50%;translate:-50% 28px;font-size:.62rem;color:rgba(235,243,255,.78);white-space:nowrap}
+  .link{position:absolute;height:2px;transform-origin:0 50%;border-radius:999px;box-shadow:0 0 18px rgba(255,255,255,.18)}.flowDot{position:absolute;width:7px;height:7px;border-radius:50%;box-shadow:0 0 16px currentColor;background:currentColor;translate:-50% -50%}
+  .focusBeam{position:absolute;left:50%;top:50%;height:3px;transform-origin:0 50%;opacity:0;pointer-events:none;border-radius:999px}.focusBeam.show{opacity:1}
+  .gold{color:var(--gold)} .blue{color:var(--blue)} .purple{color:var(--purple)} .green{color:var(--green)} .orange{color:var(--orange)} .red{color:var(--red)}
+  .footerNote{margin-top:12px;font-size:.79rem;color:var(--muted);line-height:1.5}
+  .hidden{display:none !important}
+  @media (max-width: 1280px){.leftRail{width:290px}.rightRail,.miniTopRight{width:320px}.centerPlate{width:360px}} 
+  @media (max-width: 980px){.leftRail{width:260px}.rightRail{display:none}.miniTopRight{width:280px}} 
+  @media (max-width: 740px){.topbar{left:10px;right:10px;top:10px;border-radius:14px;padding:12px}.leftRail{top:auto;bottom:86px;left:10px;width:calc(50vw - 14px);max-height:42vh;border-radius:14px}.miniTopRight{bottom:10px;right:10px;width:calc(50vw - 14px);border-radius:14px}.bottomDock{left:10px;right:10px;transform:none;width:auto;bottom:10px;border-radius:14px}.centerPlate{display:none}.scene{width:150vw;height:140vh}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="sceneWrap" id="sceneWrap">
+    <div class="scene" id="scene">
+      <div class="spaceGlow"></div>
+      <div class="grid"></div>
+      <div class="pulsePlane"></div>
+      <div class="rings"><div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div></div>
+      <div class="sectorRings"><div class="sectorRing s1"></div><div class="sectorRing s2"></div></div>
+      <div class="floorText" id="floorText"></div>
+      <div class="links" id="links"></div>
+      <div class="nodes" id="nodes"></div>
+      <div class="scanlines"></div>
+    </div>
+  </div>
+
+  <div class="centerPlate">
+    <div class="plate">
+      <div class="crest">
+        <div class="logo"></div>
+        <div>
+          <div class="headline">GRACE-X SOVEREIGN COMMAND DECK</div>
+          <div class="subline">Built by Zac Crockett • Triple Core Golden Ratio • Modular AI OS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topbar hudCard">
+    <div class="brand">
+      <h1>GRACE-X ROLLS-ROYCE DECK</h1>
+      <div class="sub">Triple Core Golden Ratio • Sovereign AI Operating System • Full Ecosystem Showcase</div>
+    </div>
+    <div class="stats">
+      <div class="pill"><div class="k">Core Ratio</div><div class="v blue">8 : 5 : 3</div></div>
+      <div class="pill"><div class="k">Command</div><div class="v gold">THE EYE</div></div>
+      <div class="pill"><div class="k">Mode</div><div class="v" id="modeReadout">Architecture</div></div>
+      <div class="pill"><div class="k">Built By</div><div class="v gold">ZAC CROCKETT</div></div>
+      <div class="pill"><div class="k">Deck Layer</div><div class="v" id="layerReadout">System View</div></div>
+    </div>
+  </div>
+
+  <aside class="leftRail hudCard">
+    <div class="sectionTitle"><h3>Selected Node</h3><span class="badge" id="nodeTypeBadge">System</span></div>
+    <div class="selected">
+      <div class="name gold" id="selectedName">THE EYE</div>
+      <div class="role" id="selectedRole">Master orchestrator and routing intelligence.</div>
+      <div class="gridInfo">
+        <div class="mini"><div class="label">Core</div><div class="value" id="selectedCore">Central</div></div>
+        <div class="mini"><div class="label">Power</div><div class="value" id="selectedPower">50%</div></div>
+        <div class="mini"><div class="label">Type</div><div class="value" id="selectedType">Master</div></div>
+        <div class="mini"><div class="label">Domain</div><div class="value" id="selectedDomain">Orchestration</div></div>
+      </div>
+      <div class="meterWrap">
+        <div class="meterRow"><div class="mLabel">Signal</div><div class="bar"><div class="fill barGold" id="meterSignal"></div></div><div class="pct" id="signalPct">96%</div></div>
+        <div class="meterRow"><div class="mLabel">Load</div><div class="bar"><div class="fill barBlue" id="meterLoad"></div></div><div class="pct" id="loadPct">41%</div></div>
+        <div class="meterRow"><div class="mLabel">Health</div><div class="bar"><div class="fill barPurple" id="meterHealth"></div></div><div class="pct" id="healthPct">100%</div></div>
+      </div>
+      <div class="footerNote" id="selectedDesc">Click any node in the map or use the jump list. Laser mode routes visible focus beams into the selected target.</div>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>View Modes</h3><span class="badge">Deck</span></div>
+    <div class="tabRow">
+      <button class="tabBtn active" id="viewArchitectureBtn">Architecture</button>
+      <button class="tabBtn" id="viewCommercialBtn">Commercial</button>
+    </div>
+    <div class="tabRow" style="margin-top:8px">
+      <button class="tabBtn active" id="normalModeBtn">Normal</button>
+      <button class="tabBtn" id="laserModeBtn">Laser Mode</button>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Legend</h3><span class="badge">Live</span></div>
+    <div class="legend">
+      <div class="legendItem"><span class="dot gold" style="background:var(--gold)"></span>The Eye / master orchestration</div>
+      <div class="legendItem"><span class="dot blue" style="background:var(--blue)"></span>Analytics lane / security / structured tooling</div>
+      <div class="legendItem"><span class="dot purple" style="background:var(--purple)"></span>Processing lane / synthesis / delivery / user output</div>
+      <div class="legendItem"><span class="dot green" style="background:var(--green)"></span>Infrastructure / memory / router / scheduler / agents</div>
+      <div class="legendItem"><span class="dot orange" style="background:var(--orange)"></span>Execution crew / specialist worker nodes</div>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Sector Clusters</h3><span class="badge">Market</span></div>
+    <div class="sectorRow">
+      <button class="sectorBtn active" data-sector="all">All</button>
+      <button class="sectorBtn" data-sector="ops">Ops</button>
+      <button class="sectorBtn" data-sector="wellness">Wellness</button>
+      <button class="sectorBtn" data-sector="security">Security</button>
+      <button class="sectorBtn" data-sector="creative">Creative</button>
+      <button class="sectorBtn" data-sector="finance">Finance</button>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Showcase Toggles</h3><span class="badge">Presentation</span></div>
+    <div class="tabRow">
+      <button class="tabBtn active" id="showInfraBtn">Infrastructure</button>
+      <button class="tabBtn active" id="showModulesBtn">Modules</button>
+    </div>
+    <div class="tabRow" style="margin-top:8px">
+      <button class="tabBtn active" id="showCrewBtn">Crew</button>
+      <button class="tabBtn active" id="showSystemsBtn">System Agents</button>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Why It Matters</h3><span class="badge">Positioning</span></div>
+    <div class="feed">
+      <div class="feedItem"><div class="top"><div class="t">What It Is</div><div class="s">AI OS</div></div><p>Not one chatbot. A sovereign modular AI operating system with routing, memory, analytics, synthesis, and vertical modules.</p></div>
+      <div class="feedItem"><div class="top"><div class="t">Commercial Shape</div><div class="s">Licensable</div></div><p>The core stays sovereign. Modules can be licensed by sector without giving away the engine.</p></div>
+    </div>
+  </aside>
+  <aside class="rightRail hudCard">
+    <div class="sectionTitle"><h3>Ecosystem Stack</h3><span class="badge">Node List</span></div>
+    <div class="tree" id="nodeList"></div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Comparison Rail</h3><span class="badge">Differentiation</span></div>
+    <div class="compareGrid" id="compareGrid">
+      <div class="compareCard">
+        <div class="top"><div class="t">Against Generic AI</div><div class="s">Edge</div></div>
+        <div class="lineRow"><span>True multi-core architecture</span><span class="check">✓</span><span class="cross">×</span></div>
+        <div class="lineRow"><span>Sovereign modular stack</span><span class="check">✓</span><span class="cross">×</span></div>
+        <div class="lineRow"><span>Infrastructure + sectors together</span><span class="check">✓</span><span class="cross">×</span></div>
+        <div class="lineRow"><span>Operator-style command deck</span><span class="check">✓</span><span class="cross">×</span></div>
+      </div>
+    </div>
+
+    <div class="sectionTitle" style="margin-top:16px"><h3>Commercial Layer</h3><span class="badge">Pitch</span></div>
+    <div class="metricGrid" id="metricGrid">
+      <div class="metricCard"><div class="top"><div class="t">Deployment</div><div class="s">Modular</div></div><p>Deploy by industry, by team, or as a flagship sovereign suite.</p></div>
+      <div class="metricCard"><div class="top"><div class="t">Licensing</div><div class="s">Per Module</div></div><p>Core retained. Modules licensed, bundled, or white-labelled as needed.</p></div>
+      <div class="metricCard"><div class="top"><div class="t">Security</div><div class="s">Layered</div></div><p>Sentinel, Venus, Titan, Router, Vault, and Scheduler support controlled growth.</p></div>
+      <div class="metricCard"><div class="top"><div class="t">Story</div><div class="s">Serious</div></div><p>Reads like a platform company, not just an app or prompt wrapper.</p></div>
+    </div>
+  </aside>
+
+  <div class="bottomDock hudCard">
+    <div class="toolbar">
+      <button id="resetView">Reset View</button>
+      <button id="frontView">Square On</button>
+      <button id="focusEye">Focus Eye</button>
+      <button id="focusCore2">Focus Core 2</button>
+      <button id="focusCore3">Focus Core 3</button>
+      <button id="zoomLayerBtn">Layered Zoom</button>
+      <button id="showAllBtn">Show Full System</button>
+      <button id="presentationBtn">Presentation Sweep</button>
+      <button class="toggleBtn active" id="spinBtn">Auto Spin</button>
+      <button class="toggleBtn active" id="labelsBtn">Labels</button>
+      <button class="toggleBtn active" id="flowBtn">Flow Dots</button>
+      <button class="toggleBtn active" id="statusBtn">Status Lights</button>
+    </div>
+  </div>
+
+  <div class="miniTopRight hudCard">
+    <div class="sectionTitle"><h3>Live Feed</h3><span class="badge">Command Stream</span></div>
+    <div class="feedItem" style="margin-bottom:8px"><div class="top"><div class="t">Deck Purpose</div><div class="s">Showcase</div></div><p>Use this screen to demonstrate architecture, routing, module breadth, deployment logic, and how the whole GRACE-X system hangs together as one serious platform.</p></div>
+    <div class="feed" id="feed"></div>
+  </div>
+</div>
+
+<script>
+const SYSTEM = [
+  { id:'sentinel', name:'SENTINEL', role:'Security boundary layer', description:'Protective guardian layer for controlled access, filtering, and secure external interactions.', type:'module', core:'Core 2', domain:'Security Boundary', power:'linked', color:'blue', x:10, y:24, z:16, signal:93, load:36, health:98, status:'online', sector:'security' },
+  { id:'venus', name:'VENUS', role:'External interaction layer', description:'Sandboxed boundary for public-facing or external information handling.', type:'module', core:'Core 2', domain:'Boundary Layer', power:'linked', color:'blue', x:17, y:20, z:20, signal:90, load:42, health:96, status:'online', sector:'security' },
+  { id:'titan', name:'TITAN', role:'Internal threat analysis nucleus', description:'Deep internal threat-assessment and internal-only analysis nucleus invoked for high-focus inspection.', type:'module', core:'Core 2', domain:'Threat Analysis', power:'linked', color:'blue', x:24, y:18, z:24, signal:95, load:51, health:97, status:'online', sector:'security' },
+  { id:'analytics-core', name:'GRACE-X Analytics', role:'Infrastructure analytics layer', description:'Telemetry, analysis, performance review, and monitoring for the wider ecosystem.', type:'system', core:'Core 2', domain:'Infrastructure Analytics', power:'linked', color:'green', x:38, y:18, z:16, signal:89, load:47, health:95, status:'online', sector:'all' },
+  { id:'router', name:'GRACE-X Router', role:'Routing layer', description:'Routes tasks and messages across system lanes, tools, and modules.', type:'system', core:'Core 2', domain:'Routing', power:'linked', color:'green', x:45, y:22, z:18, signal:91, load:44, health:97, status:'online', sector:'all' },
+  { id:'vault', name:'GRACE-X Vault', role:'Persistent storage layer', description:'Long-term storage, logs, records, and persistent memory support.', type:'system', core:'Core 3', domain:'Storage', power:'linked', color:'green', x:56, y:22, z:18, signal:88, load:39, health:96, status:'online', sector:'all' },
+  { id:'scheduler', name:'GRACE-X Scheduler', role:'Task scheduling layer', description:'Schedules system tasks, timing, and automation behaviours across the stack.', type:'system', core:'Core 3', domain:'Scheduling', power:'linked', color:'green', x:63, y:18, z:16, signal:86, load:31, health:94, status:'online', sector:'all' },
+
+  { id:'eye', name:'THE EYE', role:'Master orchestrator', description:'Receives all queries, routes them into the correct core, and pulls answers back into one controlled output.', type:'master', core:'Central', domain:'Orchestration', power:'50%', color:'gold', x:50, y:18, z:220, signal:96, load:41, health:100, status:'online', sector:'all' },
+  { id:'core2', name:'CORE 2', role:'Analytics Engine', description:'High-analysis side of the system. Handles data inspection, logic, search, security, business logic, and tool-heavy module work.', type:'core', core:'Core 2', domain:'Analytics', power:'31.25%', color:'blue', x:29, y:43, z:120, signal:91, load:67, health:94, status:'online', sector:'all' },
+  { id:'core3', name:'CORE 3', role:'Processing Engine', description:'Execution and response side. Handles synthesis, memory, wellness-style modules, and practical output processing.', type:'core', core:'Core 3', domain:'Processing', power:'18.75%', color:'purple', x:71, y:43, z:120, signal:90, load:59, health:96, status:'online', sector:'all' },
+
+  { id:'gxcore', name:'GRACE-X Core', role:'Orchestration module', description:'Internal command spine for orchestration.', type:'module', core:'Core 2', domain:'Orchestration', power:'linked', color:'blue', x:16, y:60, z:42, signal:82, load:38, health:91, status:'online', sector:'ops' },
+  { id:'forge', name:'GRACE-X Forge', role:'Development module', description:'Build and dev environment nucleus.', type:'module', core:'Core 2', domain:'Development', power:'linked', color:'blue', x:21, y:68, z:36, signal:84, load:63, health:92, status:'busy', sector:'ops' },
+  { id:'sport', name:'GRACE-X Sport', role:'Analytics module', description:'Sports analytics and prediction surface.', type:'module', core:'Core 2', domain:'Analytics', power:'linked', color:'blue', x:27, y:75, z:34, signal:79, load:58, health:88, status:'online', sector:'ops' },
+  { id:'osint', name:'GRACE-X OSINT', role:'Intelligence module', description:'External signal gathering.', type:'module', core:'Core 2', domain:'Intelligence', power:'linked', color:'blue', x:33, y:68, z:32, signal:87, load:70, health:89, status:'busy', sector:'security' },
+  { id:'accounting', name:'GRACE-X Accounting', role:'Finance module', description:'Accounting and structured reporting.', type:'module', core:'Core 2', domain:'Finance', power:'linked', color:'blue', x:39, y:74, z:30, signal:76, load:34, health:93, status:'online', sector:'finance' },
+  { id:'builder', name:'GRACE-X Builder', role:'Build module', description:'Construction and planning support logic.', type:'module', core:'Core 2', domain:'Build', power:'linked', color:'blue', x:35, y:57, z:28, signal:83, load:64, health:90, status:'busy', sector:'ops' },
+  { id:'tradelink', name:'GRACE-X TradeLink', role:'Business module', description:'Commercial workflows and trade services.', type:'module', core:'Core 2', domain:'Business', power:'linked', color:'blue', x:23, y:53, z:26, signal:81, load:49, health:87, status:'online', sector:'ops' },
+  { id:'guardian', name:'GRACE-X Guardian', role:'Security module', description:'Safety and protective system layer.', type:'module', core:'Core 2', domain:'Security', power:'linked', color:'blue', x:42, y:54, z:26, signal:94, load:44, health:97, status:'online', sector:'security' },
+  { id:'siteops', name:'GRACE-X SiteOps', role:'Ops module', description:'Site operations and deployment logic.', type:'module', core:'Core 2', domain:'Operations', power:'linked', color:'blue', x:18, y:46, z:22, signal:80, load:56, health:86, status:'busy', sector:'ops' },
+  { id:'family', name:'GRACE-X Family', role:'Coordination module', description:'Family-safe coordination workflows.', type:'module', core:'Core 2', domain:'Coordination', power:'linked', color:'blue', x:35, y:49, z:24, signal:78, load:32, health:89, status:'online', sector:'wellness' },
+
+  { id:'analytics-agent', name:'Analytics Agent', role:'System agent', description:'Deep inspection and numeric reasoning agent.', type:'system', core:'Core 2', domain:'Inspection', power:'linked', color:'green', x:16, y:35, z:18, signal:88, load:53, health:93, status:'online', sector:'all' },
+  { id:'database-agent', name:'Database Agent', role:'System agent', description:'Data management and retrieval logic.', type:'system', core:'Core 2', domain:'Data', power:'linked', color:'green', x:21, y:31, z:20, signal:86, load:40, health:95, status:'online', sector:'all' },
+  { id:'logic-agent', name:'Logic Agent', role:'System agent', description:'Reasoning engine and structure checker.', type:'system', core:'Core 2', domain:'Reasoning', power:'linked', color:'green', x:27, y:29, z:20, signal:89, load:61, health:92, status:'busy', sector:'all' },
+  { id:'security-agent', name:'Security Agent', role:'System agent', description:'Security and system hardening layer.', type:'system', core:'Core 2', domain:'Protection', power:'linked', color:'green', x:34, y:30, z:20, signal:95, load:47, health:97, status:'online', sector:'all' },
+  { id:'search-agent', name:'Search Agent', role:'System agent', description:'Search and discovery processing.', type:'system', core:'Core 2', domain:'Query', power:'linked', color:'green', x:40, y:34, z:20, signal:87, load:55, health:91, status:'online', sector:'all' },
+
+  { id:'alpha', name:'Analyst Alpha', role:'Crew node', description:'Data analysis specialist.', type:'crew', core:'Core 2', domain:'Analysis', power:'linked', color:'orange', x:13, y:79, z:10, signal:72, load:26, health:84, status:'idle', sector:'all' },
+  { id:'beta', name:'Analyst Beta', role:'Crew node', description:'Pattern recognition specialist.', type:'crew', core:'Core 2', domain:'Patterns', power:'linked', color:'orange', x:20, y:84, z:10, signal:71, load:31, health:85, status:'idle', sector:'all' },
+  { id:'gamma', name:'Analyst Gamma', role:'Crew node', description:'Trend detection specialist.', type:'crew', core:'Core 2', domain:'Trends', power:'linked', color:'orange', x:28, y:87, z:10, signal:73, load:36, health:87, status:'idle', sector:'all' },
+  { id:'delta', name:'Analyst Delta', role:'Crew node', description:'Risk assessment specialist.', type:'crew', core:'Core 2', domain:'Risk', power:'linked', color:'orange', x:36, y:84, z:10, signal:74, load:33, health:88, status:'idle', sector:'all' },
+  { id:'epsilon', name:'Analyst Epsilon', role:'Crew node', description:'Forecasting specialist.', type:'crew', core:'Core 2', domain:'Forecasting', power:'linked', color:'orange', x:43, y:79, z:10, signal:75, load:29, health:86, status:'idle', sector:'all' },
+
+  { id:'uplift', name:'GRACE-X Uplift', role:'Wellness module', description:'Mental health support and uplift logic.', type:'module', core:'Core 3', domain:'Wellness', power:'linked', color:'purple', x:84, y:60, z:42, signal:88, load:48, health:95, status:'online', sector:'wellness' },
+  { id:'fit', name:'GRACE-X Fit', role:'Fitness module', description:'Fitness planning and routine support.', type:'module', core:'Core 3', domain:'Fitness', power:'linked', color:'purple', x:78, y:68, z:36, signal:82, load:44, health:92, status:'online', sector:'wellness' },
+  { id:'yoga', name:'GRACE-X Yoga', role:'Mindfulness module', description:'Calm and breathing flows.', type:'module', core:'Core 3', domain:'Mindfulness', power:'linked', color:'purple', x:72, y:75, z:34, signal:83, load:27, health:94, status:'online', sector:'wellness' },
+  { id:'chef', name:'GRACE-X Chef', role:'Culinary module', description:'Meal ideas and kitchen logic.', type:'module', core:'Core 3', domain:'Culinary', power:'linked', color:'purple', x:66, y:68, z:32, signal:79, load:41, health:90, status:'online', sector:'wellness' },
+  { id:'beauty', name:'GRACE-X Beauty', role:'Aesthetics module', description:'Beauty and style support.', type:'module', core:'Core 3', domain:'Aesthetics', power:'linked', color:'purple', x:60, y:74, z:30, signal:77, load:24, health:88, status:'idle', sector:'creative' },
+  { id:'artist', name:'GRACE-X Artist', role:'Creative module', description:'Creative generation and arts support.', type:'module', core:'Core 3', domain:'Creative', power:'linked', color:'purple', x:65, y:57, z:28, signal:84, load:54, health:91, status:'busy', sector:'creative' },
+  { id:'gamer', name:'GRACE-X Gamer', role:'Gaming module', description:'Gaming overlays and strategy.', type:'module', core:'Core 3', domain:'Gaming', power:'linked', color:'purple', x:77, y:53, z:26, signal:81, load:66, health:89, status:'busy', sector:'creative' },
+
+  { id:'ram-a', name:'RAM Agent Alpha', role:'System agent', description:'Primary memory bank.', type:'system', core:'Core 3', domain:'Memory', power:'linked', color:'green', x:84, y:35, z:18, signal:90, load:37, health:96, status:'online', sector:'all' },
+  { id:'ram-b', name:'RAM Agent Beta', role:'System agent', description:'Secondary memory bank.', type:'system', core:'Core 3', domain:'Memory', power:'linked', color:'green', x:79, y:31, z:20, signal:89, load:34, health:95, status:'online', sector:'all' },
+  { id:'network', name:'Network Agent', role:'System agent', description:'Communications and handoff routing.', type:'system', core:'Core 3', domain:'Comms', power:'linked', color:'green', x:72, y:29, z:20, signal:93, load:43, health:97, status:'online', sector:'all' },
+
+  { id:'zeta', name:'Processor Zeta', role:'Crew node', description:'Task execution specialist.', type:'crew', core:'Core 3', domain:'Execution', power:'linked', color:'orange', x:86, y:79, z:10, signal:73, load:28, health:87, status:'idle', sector:'all' },
+  { id:'eta', name:'Processor Eta', role:'Crew node', description:'Output generation specialist.', type:'crew', core:'Core 3', domain:'Output', power:'linked', color:'orange', x:79, y:84, z:10, signal:74, load:31, health:88, status:'idle', sector:'all' },
+  { id:'theta', name:'Processor Theta', role:'Crew node', description:'Response synthesis specialist.', type:'crew', core:'Core 3', domain:'Synthesis', power:'linked', color:'orange', x:71, y:87, z:10, signal:75, load:35, health:89, status:'idle', sector:'all' }
+];
+
+const links = [
+  ['eye','core2','gold'],['eye','core3','gold'],['core2','core3','gold'],['eye','sentinel','gold'],['eye','venus','gold'],['eye','titan','gold'],['core2','analytics-core','green'],['core2','router','green'],['core3','vault','green'],['core3','scheduler','green'],
+  ...SYSTEM.filter(n=>n.core==='Core 2' && !['core2','sentinel','venus','titan'].includes(n.id)).map(n=>['core2',n.id, n.type==='module' ? 'blue' : n.type==='system' ? 'green' : 'orange']),
+  ...SYSTEM.filter(n=>n.core==='Core 3' && n.id!=='core3').map(n=>['core3',n.id, n.type==='module' ? 'purple' : n.type==='system' ? 'green' : 'orange'])
+];
+
+const visibility = { infrastructure:true, modules:true, crew:true, systems:true };
+let presentationSweep = false, sweepIndex = 0, laserMode = false, viewMode = 'architecture', sectorMode = 'all', layeredZoom = false;
+let rotX = 72, rotZ = 0, zoom = 1.03, dragging = false, px = 0, py = 0, autoSpin = true, labelsOn = true, flowOn = true, statusOn = true, activeId = 'eye', t = 0;
+
+const nodesEl = document.getElementById('nodes');
+const linksEl = document.getElementById('links');
+const nodeListEl = document.getElementById('nodeList');
+const feedEl = document.getElementById('feed');
+const sceneEl = document.getElementById('scene');
+const sceneWrap = document.getElementById('sceneWrap');
+const nodeMap = new Map();
+const linkMap = [];
+
+function statusColor(status){ if(status==='busy') return 'var(--orange)'; if(status==='idle') return 'var(--red)'; return 'var(--green)'; }
+function statusWord(status){ if(status==='busy') return 'Busy'; if(status==='idle') return 'Idle'; return 'Online'; }
+function colorVar(name){ return `var(--${name})`; }
+function zPx(z){ return z; }
+function percentXY(n){ return {x: window.innerWidth*(n.x/100), y: window.innerHeight*(n.y/100)}; }
+function isInfrastructure(id){ return ['sentinel','venus','titan','analytics-core','router','vault','scheduler'].includes(id); }
+
+for(let i=0;i<160;i++){ const s=document.createElement('div'); s.className='star'; s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%'; s.style.transform=`translateZ(${Math.random()*-700}px) scale(${.6+Math.random()*1.8})`; s.style.opacity=.2+Math.random()*.8; sceneEl.appendChild(s); }
+const floorText = document.getElementById('floorText');
+[
+  {txt:'SECURITY / BOUNDARY', left:'15%', top:'18%'},
+  {txt:'ANALYTICS LANE', left:'27%', top:'38%'},
+  {txt:'PROCESSING LANE', left:'73%', top:'38%'},
+  {txt:'OPS / BUILDER / TRADE', left:'23%', top:'73%'},
+  {txt:'WELLNESS / CREATIVE', left:'74%', top:'73%'}
+].forEach(f=>{ const el=document.createElement('div'); el.className='floorLabel'; el.textContent=f.txt; el.style.left=f.left; el.style.top=f.top; floorText.appendChild(el); });
+
+function createNode(n){
+  const el=document.createElement('div'); el.className=`node ${n.type} ${n.color}`; el.dataset.id=n.id; el.style.left=n.x+'%'; el.style.top=n.y+'%'; el.style.transform=`translate3d(0,0,${zPx(n.z)}px)`;
+  const shadow=document.createElement('div'); shadow.className='shadow';
+  const halo=document.createElement('div'); halo.className='halo';
+  const ball=document.createElement('div'); ball.className='ball';
+  const status=document.createElement('div'); status.className='statusDot'; status.style.color=statusColor(n.status);
+  const label=document.createElement('div'); label.className='label'; label.textContent=n.name;
+  const detail=document.createElement('div'); detail.className='detailLabel'; detail.textContent=`${n.core} • ${n.domain}`;
+  const beam=document.createElement('div'); beam.className='focusBeam'; beam.style.background=`linear-gradient(90deg, ${colorVar(n.color)}, rgba(255,255,255,.08))`;
+  el.append(shadow,halo,ball,status,label,detail,beam); el.addEventListener('click',e=>{e.stopPropagation(); focusNode(n.id);});
+  nodesEl.appendChild(el); nodeMap.set(n.id,el);
+}
+SYSTEM.forEach(createNode);
+
+function createLink(aId,bId,colorName){
+  const el=document.createElement('div'); el.className='link'; el.style.background=`linear-gradient(90deg, rgba(255,255,255,.08), ${colorVar(colorName)}, rgba(255,255,255,.08))`;
+  const dot=document.createElement('div'); dot.className='flowDot'; dot.style.color=colorVar(colorName);
+  linksEl.appendChild(el); linksEl.appendChild(dot);
+  linkMap.push({aId,bId,colorName,el,dot,progress:Math.random()});
+}
+links.forEach(([a,b,c])=>createLink(a,b,c));
+
+function positionLinks(){
+  linkMap.forEach(l=>{ const a=SYSTEM.find(n=>n.id===l.aId), b=SYSTEM.find(n=>n.id===l.bId); const pa=percentXY(a), pb=percentXY(b); const dx=pb.x-pa.x, dy=pb.y-pa.y; const len=Math.hypot(dx,dy), ang=Math.atan2(dy,dx)*180/Math.PI, midZ=((a.z+b.z)/2)-24; l.el.style.left=pa.x+'px'; l.el.style.top=pa.y+'px'; l.el.style.width=len+'px'; l.el.style.transform=`translate3d(0,0,${midZ}px) rotate(${ang}deg)`; });
+}
+positionLinks(); window.addEventListener('resize', ()=>{positionLinks(); updateLaserBeams();});
+
+function buildNodeList(){
+  const ordered=['eye','core2','core3','sentinel','venus','titan','analytics-core','router','vault','scheduler',...SYSTEM.filter(n=>!['eye','core2','core3','sentinel','venus','titan','analytics-core','router','vault','scheduler'].includes(n.id)).map(n=>n.id)];
+  ordered.forEach(id=>{ const n=SYSTEM.find(x=>x.id===id); const btn=document.createElement('button'); btn.className='chip'; btn.dataset.id=n.id; btn.innerHTML=`<div class="title" style="color:${colorVar(n.color)}">${n.name}</div><div class="meta">${n.core} • ${n.domain} • ${statusWord(n.status)}</div>`; btn.addEventListener('click',()=>focusNode(n.id)); nodeListEl.appendChild(btn);});
+}
+buildNodeList();
+
+function pushFeed(msg,status='LIVE'){ const item=document.createElement('div'); item.className='feedItem'; item.innerHTML=`<div class="top"><div class="t">${status}</div><div class="s">${new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</div></div><p>${msg}</p>`; feedEl.prepend(item); while(feedEl.children.length>6) feedEl.removeChild(feedEl.lastChild); }
+function setMeter(id,val){ document.getElementById(id).style.width=val+'%'; }
+
+function updateCommercialPanels(n){
+  const compare = document.getElementById('compareGrid');
+  const metric = document.getElementById('metricGrid');
+  if(viewMode==='architecture'){
+    compare.innerHTML = `<div class="compareCard"><div class="top"><div class="t">Against Generic AI</div><div class="s">Edge</div></div><div class="lineRow"><span>True multi-core architecture</span><span class="check">✓</span><span class="cross">×</span></div><div class="lineRow"><span>Sovereign modular stack</span><span class="check">✓</span><span class="cross">×</span></div><div class="lineRow"><span>Infrastructure + sectors together</span><span class="check">✓</span><span class="cross">×</span></div><div class="lineRow"><span>Operator-style command deck</span><span class="check">✓</span><span class="cross">×</span></div></div>`;
+    metric.innerHTML = `<div class="metricCard"><div class="top"><div class="t">Deployment</div><div class="s">Modular</div></div><p>Deploy by industry, by team, or as a flagship sovereign suite.</p></div><div class="metricCard"><div class="top"><div class="t">Licensing</div><div class="s">Per Module</div></div><p>Core retained. Modules licensed, bundled, or white-labelled as needed.</p></div><div class="metricCard"><div class="top"><div class="t">Security</div><div class="s">Layered</div></div><p>Sentinel, Venus, Titan, Router, Vault, and Scheduler support controlled growth.</p></div><div class="metricCard"><div class="top"><div class="t">Story</div><div class="s">Serious</div></div><p>Reads like a platform company, not just an app or prompt wrapper.</p></div>`;
+  } else {
+    compare.innerHTML = `<div class="compareCard"><div class="top"><div class="t">Commercial Read</div><div class="s">${n.name}</div></div><div class="lineRow"><span>Sector fit</span><span class="check">${n.sector==='all' ? '✓' : '✓'}</span><span class="cross">•</span></div><div class="lineRow"><span>Bundle-ready</span><span class="check">✓</span><span class="cross">•</span></div><div class="lineRow"><span>Licensable layer</span><span class="check">✓</span><span class="cross">•</span></div><div class="lineRow"><span>Enterprise story</span><span class="check">✓</span><span class="cross">•</span></div></div>`;
+    metric.innerHTML = `<div class="metricCard"><div class="top"><div class="t">Who Buys</div><div class="s">${n.sector.toUpperCase()}</div></div><p>${sectorPitch(n.sector).who}</p></div><div class="metricCard"><div class="top"><div class="t">Why It Matters</div><div class="s">Value</div></div><p>${sectorPitch(n.sector).why}</p></div><div class="metricCard"><div class="top"><div class="t">Commercial Form</div><div class="s">Offer</div></div><p>${sectorPitch(n.sector).offer}</p></div><div class="metricCard"><div class="top"><div class="t">Position</div><div class="s">Edge</div></div><p>${sectorPitch(n.sector).edge}</p></div>`;
+  }
+}
+
+function sectorPitch(sector){
+  const map = {
+    all:{who:'Broad enterprise, government, defence, and multi-vertical deployments.', why:'Shows the whole stack as a sovereign command environment rather than a single app.', offer:'Flagship operating system deployment or premium command deck package.', edge:'Platform depth, sector flexibility, and controlled module licensing.'},
+    ops:{who:'Trades, site operations, project delivery, logistics, and field teams.', why:'Turns workflows into structured routing, memory, and practical execution.', offer:'Ops bundle: Builder + TradeLink + SiteOps + Accounting.', edge:'More than automation. It is a command system with retained memory and control.'},
+    wellness:{who:'Wellbeing, family, coaching, support, and daily-life assistance markets.', why:'Blends synthesis, support, and continuity across Uplift, Fit, Yoga, Chef, Family.', offer:'Wellness bundle or consumer premium suite.', edge:'Feels personal and modular while still living inside a serious wider platform.'},
+    security:{who:'Security, policing, intelligence, incident response, and compliance-heavy teams.', why:'Sentinel, Venus, Titan, Guardian, OSINT and analytics create a strong serious story.', offer:'Security boundary package or controlled public-sector deployment.', edge:'Named security layers and controlled routing make it read like a platform, not a gimmick.'},
+    creative:{who:'Creators, media, gaming, content, and interactive experiences.', why:'Creative nodes become part of a wider operating system rather than isolated tools.', offer:'Creator bundle or branded studio-grade interface.', edge:'Creative capability sits on top of serious infrastructure and memory.'},
+    finance:{who:'Accounting, reporting, oversight, audit-style workflows, and SME operations.', why:'Structured logic, routing, and records give finance-related modules credibility.', offer:'Finance + ops package.', edge:'Operational memory plus analytics plus commercial routing in one stack.'}
+  };
+  return map[sector] || map.all;
+}
+
+function updateSelected(n){
+  activeId=n.id;
+  document.getElementById('nodeTypeBadge').textContent=n.type;
+  document.getElementById('nodeTypeBadge').style.color=colorVar(n.color);
+  document.getElementById('selectedName').textContent=n.name;
+  document.getElementById('selectedName').style.color=colorVar(n.color);
+  document.getElementById('selectedRole').textContent=n.role;
+  document.getElementById('selectedCore').textContent=n.core;
+  document.getElementById('selectedPower').textContent=n.power;
+  document.getElementById('selectedType').textContent=n.type;
+  document.getElementById('selectedDomain').textContent=n.domain;
+  document.getElementById('selectedDesc').textContent=n.description + ' This node sits inside the wider sovereign GRACE-X stack and feeds into the triple-core command architecture.';
+  document.getElementById('signalPct').textContent=n.signal+'%'; document.getElementById('loadPct').textContent=n.load+'%'; document.getElementById('healthPct').textContent=n.health+'%'; setMeter('meterSignal',n.signal); setMeter('meterLoad',n.load); setMeter('meterHealth',n.health);
+  document.querySelectorAll('.chip').forEach(c=>{c.classList.remove('active'); c.style.color='';}); document.querySelectorAll('.node').forEach(el=>el.classList.remove('active')); const chip=document.querySelector(`.chip[data-id="${n.id}"]`); if(chip){chip.classList.add('active'); chip.style.color=colorVar(n.color);} const nodeEl=nodeMap.get(n.id); if(nodeEl) nodeEl.classList.add('active');
+  updateCommercialPanels(n);
+  pushFeed(`${n.name} selected. ${n.core} lane active. Status: ${statusWord(n.status)}. Showcase layer updated.`, 'FOCUS');
+  updateLaserBeams();
+}
+
+function setSceneTransform(){ sceneEl.style.transform=`translate(-50%,-50%) rotateX(${rotX}deg) rotateZ(${rotZ}deg) scale(${zoom})`; }
+function focusNode(id){ const n=SYSTEM.find(x=>x.id===id); if(!n) return; updateSelected(n); if(layeredZoom){ zoom = n.type==='master' ? 1.04 : n.type==='core' ? 1.16 : n.type==='module' ? 1.28 : 1.34; } if(id==='eye'){rotX=72;rotZ=0;zoom=layeredZoom?1.04:1.06;} else if(id==='core2'){rotX=75;rotZ=16;zoom=layeredZoom?1.16:1.16;} else if(id==='core3'){rotX=75;rotZ=-16;zoom=layeredZoom?1.16:1.16;} else if(n.core==='Core 2'){rotX=78;rotZ=18;zoom=layeredZoom?1.30:1.24;} else if(n.core==='Core 3'){rotX=78;rotZ=-18;zoom=layeredZoom?1.30:1.24;} else {rotX=75;zoom=1.18;} setSceneTransform(); }
+function resetView(){ rotX=72; rotZ=0; zoom=1.03; setSceneTransform(); focusNode('eye'); }
+function frontView(){ rotX=82; rotZ=0; zoom=1.08; autoSpin=false; setSceneTransform(); }
+function updateModeButtons(){ document.getElementById('normalModeBtn').classList.toggle('active', !laserMode); document.getElementById('laserModeBtn').classList.toggle('active', laserMode); document.getElementById('modeReadout').textContent=laserMode?'Laser Mode':viewMode==='commercial'?'Commercial':'Architecture'; document.getElementById('modeReadout').style.color=laserMode?'var(--gold)':viewMode==='commercial'?'var(--purple)':'var(--green)'; document.getElementById('layerReadout').textContent=viewMode==='commercial'?'Commercial View':'System View'; }
+
+function updateLaserBeams(){
+  nodeMap.forEach(el=>{ const beam=el.querySelector('.focusBeam'); beam.classList.remove('show'); beam.style.width='0px'; });
+  if(!laserMode) return;
+  const activeNode=SYSTEM.find(n=>n.id===activeId); if(!activeNode) return;
+  let sources=[]; if(activeId==='eye') sources=['core2','core3']; else if(activeId==='core2'||activeId==='core3') sources=['eye']; else if(activeNode.core==='Core 2') sources=['core2','eye']; else if(activeNode.core==='Core 3') sources=['core3','eye'];
+  const target=nodeMap.get(activeId); if(!target || target.classList.contains('hidden')) return; const tr=target.getBoundingClientRect(); const tx=tr.left+tr.width/2, ty=tr.top+tr.height/2;
+  sources.forEach(id=>{ const src=nodeMap.get(id); if(!src || src.classList.contains('hidden')) return; const beam=src.querySelector('.focusBeam'); const r=src.getBoundingClientRect(); const sx=r.left+r.width/2, sy=r.top+r.height/2; const dx=tx-sx, dy=ty-sy; const len=Math.hypot(dx,dy), ang=Math.atan2(dy,dx)*180/Math.PI; beam.style.width=len+'px'; beam.style.transform=`translate(-50%,-50%) rotate(${ang}deg)`; beam.classList.add('show'); });
+}
+
+function applyVisibility(){
+  SYSTEM.forEach(n=>{
+    const el=nodeMap.get(n.id); if(!el) return; let show=true;
+    if(isInfrastructure(n.id)) show=visibility.infrastructure;
+    else if(n.type==='module') show=visibility.modules;
+    else if(n.type==='crew') show=visibility.crew;
+    else if(n.type==='system') show=visibility.systems;
+    if(sectorMode!=='all' && n.sector!=='all' && n.sector!==sectorMode && !['eye','core2','core3'].includes(n.id)) show=false;
+    el.classList.toggle('hidden', !show);
+  });
+  linkMap.forEach(l=>{ const a=nodeMap.get(l.aId), b=nodeMap.get(l.bId); const visible=a && b && !a.classList.contains('hidden') && !b.classList.contains('hidden'); l.el.classList.toggle('hidden', !visible); l.dot.classList.toggle('hidden', !visible || !flowOn); });
+  updateLaserBeams();
+}
+
+function setViewMode(mode){
+  viewMode = mode;
+  document.getElementById('viewArchitectureBtn').classList.toggle('active', mode==='architecture');
+  document.getElementById('viewCommercialBtn').classList.toggle('active', mode==='commercial');
+  updateModeButtons();
+  updateCommercialPanels(SYSTEM.find(n=>n.id===activeId));
+  pushFeed(`${mode==='commercial' ? 'Commercial' : 'Architecture'} view engaged.`, 'VIEW');
+}
+
+sceneWrap.addEventListener('pointerdown', e=>{ dragging=true; px=e.clientX; py=e.clientY; autoSpin=false; document.getElementById('spinBtn').classList.remove('active');});
+window.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-px, dy=e.clientY-py; px=e.clientX; py=e.clientY; rotZ+=dx*.18; rotX-=dy*.10; rotX=Math.max(58,Math.min(84,rotX)); setSceneTransform(); });
+window.addEventListener('pointerup', ()=>dragging=false);
+window.addEventListener('wheel', e=>{ e.preventDefault(); zoom+=e.deltaY>0?-0.05:0.05; zoom=Math.max(.72,Math.min(1.48,zoom)); setSceneTransform(); }, {passive:false});
+
+function animate(){
+  t += 0.016;
+  if(autoSpin && !dragging){ rotZ += 0.035; setSceneTransform(); }
+  SYSTEM.forEach((n,i)=>{ const el=nodeMap.get(n.id); if(!el || el.classList.contains('hidden')) return; const bob=Math.sin(t*1.45+i*.45)*(n.type==='master'?6:n.type==='core'?5:3.5); const focusBoost=n.id===activeId?1.18:1+Math.sin(t*2+i*.33)*0.04; el.style.transform=`translate3d(0,0,${zPx(n.z)+bob}px) scale(${focusBoost})`; const label=el.querySelector('.label'); const detail=el.querySelector('.detailLabel'); label.style.display=labelsOn?'block':'none'; detail.style.display=labelsOn?'block':'none'; const halo=el.querySelector('.halo'); if(halo) halo.style.transform=`translate(-50%,-50%) scale(${1+Math.sin(t*2.2+i*.4)*0.06})`; const status=el.querySelector('.statusDot'); status.style.display=statusOn?'block':'none'; status.style.opacity=.62+Math.sin(t*3+i*.6)*.32; });
+  linkMap.forEach((l,i)=>{ if(l.el.classList.contains('hidden')) return; l.el.style.opacity=.24+Math.sin(t*2.6+i*.28)*.10; if(flowOn){ l.dot.classList.remove('hidden'); l.progress=(l.progress+0.005+(laserMode?0.006:0))%1; const a=SYSTEM.find(n=>n.id===l.aId), b=SYSTEM.find(n=>n.id===l.bId); const pa=percentXY(a), pb=percentXY(b); const x=pa.x+(pb.x-pa.x)*l.progress, y=pa.y+(pb.y-pa.y)*l.progress, z=((a.z+b.z)/2)-22+Math.sin(t*3+i)*3; l.dot.style.left=x+'px'; l.dot.style.top=y+'px'; l.dot.style.transform=`translate3d(0,0,${z}px)`; } else { l.dot.classList.add('hidden'); } });
+  requestAnimationFrame(animate);
+}
+
+const messages=[
+  'GRACE-X command deck live. Sovereign modular AI operating system view active.',
+  'The Eye is routing across both cores and visible ecosystem lanes.',
+  'Infrastructure, modules, agents, and crew are now shown as one stack.',
+  'Laser mode is presentation-ready for focused demos and investor walkthroughs.',
+  'Core stays sovereign. Modules can be licensed and expanded without losing system control.',
+  'Commercial view converts architecture into deployment, bundle, and licensing logic.'
+];
+let msgIndex=0; pushFeed('Rolls-Royce deck initialised. Full-screen command view online.', 'BOOT'); setInterval(()=>{ pushFeed(messages[msgIndex % messages.length], 'LIVE'); msgIndex++; }, 4200);
+setInterval(()=>{ if(!presentationSweep) return; const targets=['eye','core2','core3','sentinel','titan','venus','builder','tradelink','siteops','guardian','uplift','artist','gamer','vault','accounting']; focusNode(targets[sweepIndex % targets.length]); sweepIndex++; }, 2600);
+
+document.getElementById('resetView').onclick=()=>{ autoSpin=false; resetView(); pushFeed('View reset to sovereign deck default.', 'CONTROL'); };
+document.getElementById('frontView').onclick=()=>{ frontView(); pushFeed('Switched to square-on inspection view.', 'CONTROL'); };
+document.getElementById('focusEye').onclick=()=>focusNode('eye'); document.getElementById('focusCore2').onclick=()=>focusNode('core2'); document.getElementById('focusCore3').onclick=()=>focusNode('core3');
+document.getElementById('normalModeBtn').onclick=()=>{ laserMode=false; updateModeButtons(); updateLaserBeams(); pushFeed('Normal mode restored.', 'MODE'); };
+document.getElementById('laserModeBtn').onclick=()=>{ laserMode=true; updateModeButtons(); updateLaserBeams(); pushFeed('Laser Mode armed. Focus beams locked.', 'MODE'); };
+document.getElementById('viewArchitectureBtn').onclick=()=>setViewMode('architecture');
+document.getElementById('viewCommercialBtn').onclick=()=>setViewMode('commercial');
+document.getElementById('presentationBtn').onclick=()=>{ presentationSweep=!presentationSweep; pushFeed(`Presentation sweep ${presentationSweep ? 'started' : 'stopped'}.`, 'PRESENT'); };
+document.getElementById('showAllBtn').onclick=()=>{ visibility.infrastructure=true; visibility.modules=true; visibility.crew=true; visibility.systems=true; sectorMode='all'; document.querySelectorAll('.sectorBtn').forEach(b=>b.classList.toggle('active', b.dataset.sector==='all')); ['showInfraBtn','showModulesBtn','showCrewBtn','showSystemsBtn'].forEach(id=>document.getElementById(id).classList.add('active')); applyVisibility(); pushFeed('Full system view restored. Entire ecosystem on screen.', 'CONTROL'); };
+document.getElementById('zoomLayerBtn').onclick=()=>{ layeredZoom=!layeredZoom; document.getElementById('zoomLayerBtn').classList.toggle('active', layeredZoom); pushFeed(`Layered zoom ${layeredZoom ? 'enabled' : 'disabled'}.`, 'CONTROL'); focusNode(activeId); };
+document.getElementById('spinBtn').onclick=()=>{ autoSpin=!autoSpin; document.getElementById('spinBtn').classList.toggle('active', autoSpin); pushFeed(`Auto spin ${autoSpin ? 'enabled' : 'disabled'}.`, 'CONTROL'); };
+document.getElementById('labelsBtn').onclick=()=>{ labelsOn=!labelsOn; document.getElementById('labelsBtn').classList.toggle('active', labelsOn); };
+document.getElementById('flowBtn').onclick=()=>{ flowOn=!flowOn; document.getElementById('flowBtn').classList.toggle('active', flowOn); applyVisibility(); };
+document.getElementById('statusBtn').onclick=()=>{ statusOn=!statusOn; document.getElementById('statusBtn').classList.toggle('active', statusOn); };
+[['showInfraBtn','infrastructure'],['showModulesBtn','modules'],['showCrewBtn','crew'],['showSystemsBtn','systems']].forEach(([id,key])=>{ document.getElementById(id).onclick=(e)=>{ visibility[key]=!visibility[key]; e.currentTarget.classList.toggle('active', visibility[key]); applyVisibility(); }; });
+document.querySelectorAll('.sectorBtn').forEach(btn=>btn.onclick=()=>{ sectorMode=btn.dataset.sector; document.querySelectorAll('.sectorBtn').forEach(b=>b.classList.toggle('active', b===btn)); applyVisibility(); pushFeed(`Sector filter set to ${sectorMode.toUpperCase()}.`, 'SECTOR'); });
+
+setSceneTransform(); updateModeButtons(); focusNode('eye'); applyVisibility(); animate();
+</script>
+</body>
+</html>

@@ -241,6 +241,21 @@ app.post('/api/voice', async (req, res) => {
   }
 });
 
+// Protected Command Deck Route (The Locked Wall)
+app.get('/deck', (req, res) => {
+    // Basic Authentication Check
+    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
+    const [login, password] = Buffer.from(b64auth, 'base64').toString().split(':');
+
+    // Require username 'admin' and password 'gracexdeck' (or an environment variable)
+    if (login === 'admin' && password === (process.env.DECK_PASSWORD || 'gracexdeck')) {
+        return res.sendFile(path.join(__dirname, 'protected', 'command_deck.html'));
+    }
+
+    res.set('WWW-Authenticate', 'Basic realm="Secure Command Deck"');
+    res.status(401).send('Authentication required. Secure Area Access Only.');
+});
+
 // Fallback route for index.html
 app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
