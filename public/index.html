@@ -6,15 +6,15 @@
   <title>GRACE-X | AI Operations Platform</title>
   <style>
     :root {
-      --bg: #030712;
-      --bg-panel: rgba(10, 15, 25, 0.85);
-      --border: rgba(56, 189, 248, 0.2);
-      --border-accent: rgba(56, 189, 248, 0.5);
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #020611;
+      --bg-panel: rgba(10, 15, 25, 0.7);
+      --border: rgba(56, 189, 248, 0.25);
       --cyan: #38bdf8;
       --green: #22c55e;
       --amber: #f59e0b;
+      --red: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
       --font-ui: "Inter", system-ui, sans-serif;
       --font-mono: "Courier New", Courier, monospace;
     }
@@ -25,8 +25,8 @@
       background-color: var(--bg);
       color: var(--text-main);
       font-family: var(--font-ui);
-      overflow-x: hidden;
-      min-height: 100vh;
+      overflow: hidden;
+      height: 100vh;
       display: flex;
       flex-direction: column;
       background-image: 
@@ -35,639 +35,544 @@
       background-size: 40px 40px;
     }
 
-    .crt-overlay {
-      position: fixed;
-      inset: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
-      background-size: 100% 4px;
-      pointer-events: none;
-      z-index: 9999;
-      opacity: 0.3;
-    }
+    button { font-family: inherit; }
 
-    header {
-      border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(180deg, rgba(14, 23, 38, 0.9), rgba(3, 7, 18, 0.9));
-      backdrop-filter: blur(10px);
+    /* Boot Sequence */
+    #boot-seq {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #000; color: var(--green);
+      font-family: var(--font-mono); font-size: 14px;
+      padding: 40px; display: flex; flex-direction: column; gap: 8px;
     }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .brand h1 {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      text-shadow: 0 0 10px rgba(56,189,248,0.4);
-    }
-    .brand p {
-      font-size: 11px;
-      color: var(--text-muted);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    .hero-stats {
-      display: flex;
-      gap: 32px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-    }
+    .boot-line { opacity: 0; }
     
-    .stat-item {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 4px;
+    /* Top Nav */
+    nav {
+      display: flex; align-items: center; border-bottom: 1px solid var(--border);
+      background: rgba(2, 6, 17, 0.9); z-index: 100;
+      padding: 0 20px;
     }
-    .stat-val {
-      color: var(--text-main);
-      font-weight: bold;
+    .brand {
+      color: var(--cyan); font-weight: 700; letter-spacing: 0.1em;
+      margin-right: 40px; font-size: 16px;
     }
-    .stat-val.green { color: var(--green); text-shadow: 0 0 8px rgba(34,197,94,0.6); }
-    .stat-val.cyan { color: var(--cyan); text-shadow: 0 0 8px rgba(56,189,248,0.6); }
-    .stat-label { color: var(--text-muted); font-size: 10px; letter-spacing: 0.1em; }
+    .nav-btn {
+      background: transparent; border: none; color: var(--text-muted);
+      padding: 20px 24px; font-size: 12px; font-weight: bold;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+      border-bottom: 2px solid transparent; transition: 0.2s;
+    }
+    .nav-btn:hover { color: var(--text-main); }
+    .nav-btn.active { color: var(--cyan); border-bottom-color: var(--cyan); }
 
-    .pulse {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      background-color: var(--green);
-      border-radius: 50%;
-      margin-right: 8px;
-      box-shadow: 0 0 12px var(--green);
-      animation: blink 2s infinite;
+    /* Layouts */
+    .tab-content { flex: 1; display: none; position: relative; overflow: auto; }
+    .tab-content.active { display: flex; }
+    
+    .panel {
+      background: var(--bg-panel); border: 1px solid var(--border);
+      display: flex; flex-direction: column; position: relative; backdrop-filter: blur(8px);
     }
+    .panel-header {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      font-size: 11px; font-weight: bold; letter-spacing: 0.15em;
+      color: var(--cyan); background: rgba(56, 189, 248, 0.05); text-transform: uppercase;
+    }
+    .panel-body { padding: 16px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; }
+
+    /* TAB 1: SYSTEM */
+    #tab-system { padding: 20px; display: none; gap: 20px; grid-template-columns: 320px 1fr 320px; }
+    #tab-system.active { display: grid; }
+    
+    .status-row { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+    .status-val { color: var(--text-main); font-weight: bold; }
+    .pulse { display: inline-block; width: 8px; height: 8px; background: var(--green); border-radius: 50%; box-shadow: 0 0 10px var(--green); animation: blink 2s infinite; margin-right: 8px; }
     @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
-    .dashboard-container {
-      display: grid;
-      grid-template-columns: 310px 1fr 310px;
-      gap: 20px;
-      padding: 20px;
-      flex: 1;
-    }
+    .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-content: start; }
+    .agent-box { border: 1px solid var(--border); padding: 12px; font-family: var(--font-mono); font-size: 11px; background: rgba(0,0,0,0.5); }
+    .agent-box.active-anim { border-color: var(--cyan); box-shadow: inset 0 0 15px rgba(56,189,248,0.2); }
+    .ag-name { font-family: var(--font-ui); font-size: 13px; font-weight: bold; color: var(--text-main); margin-bottom: 4px; }
+    .ag-stat { display: flex; justify-content: space-between; margin-top: 4px; color: var(--text-muted); }
 
-    @media (max-width: 1100px) {
-      .dashboard-container { grid-template-columns: 1fr; }
-    }
+    .sys-log { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); display: flex; flex-direction: column; gap: 6px; }
+    .log-line .time { color: var(--cyan); margin-right: 8px; }
 
-    .panel {
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
+    /* TAB 2: MODULES */
+    #tab-modules { padding: 20px; display: none; gap: 20px; grid-template-columns: 2fr 1fr; }
+    #tab-modules.active { display: grid; }
     
-    .panel::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: -1px;
-      width: 10px; height: 10px;
-      border-top: 2px solid var(--cyan);
-      border-left: 2px solid var(--cyan);
+    .mod-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-content: start; }
+    .mod-btn { 
+      border: 1px solid var(--border); padding: 24px; text-align: center; font-weight: bold; 
+      letter-spacing: 0.1em; color: var(--cyan); cursor: pointer; transition: 0.2s; 
+      background: rgba(14,23,38,0.5); text-transform: uppercase; font-size: 14px;
     }
-    .panel::after {
-      content: '';
-      position: absolute;
-      bottom: -1px; right: -1px;
-      width: 10px; height: 10px;
-      border-bottom: 2px solid var(--cyan);
-      border-right: 2px solid var(--cyan);
-    }
-
-    .panel-header {
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      font-weight: bold;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      background: rgba(56, 189, 248, 0.05);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .panel-content {
-      padding: 16px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      overflow-y: auto;
-    }
-
-    /* AI Ops Dashboard */
-    .agent-grid {
-      display: grid;
-      gap: 12px;
-    }
-    .agent-card {
-      border: 1px solid var(--border);
-      padding: 12px;
-      background: rgba(0,0,0,0.4);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: all 0.2s;
-    }
-    .agent-card.active-collaboration {
-      border-color: var(--cyan);
-      box-shadow: inset 0 0 15px rgba(56,189,248,0.2);
-    }
-    .agent-info { color: var(--text-muted); }
-    .agent-name { color: var(--text-main); font-weight: bold; font-family: var(--font-ui); font-size: 13px; margin-bottom: 4px; }
-    .agent-status { color: var(--green); }
-    .agent-status.idle { color: var(--amber); }
-
-    .load-bars { display: flex; flex-direction: column; gap: 8px; }
-    .load-bar-group { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); display:flex; flex-direction:column; gap:4px; }
-    .bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); }
-    .bar-fill { height: 100%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transition: width 0.5s ease;}
-    .bar-fill.high { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
-
-    .task-flow {
-      border: 1px dotted var(--border);
-      padding: 16px;
-      text-align: center;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--cyan);
-      background: repeating-linear-gradient(45deg, rgba(56,189,248,0.02) 0px, rgba(56,189,248,0.02) 10px, transparent 10px, transparent 20px);
-    }
-
-    /* Modules */
-    .modules-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-    .module-btn {
-      background: rgba(14, 23, 38, 0.4);
-      border: 1px solid var(--border);
-      padding: 20px 16px;
-      color: var(--cyan);
-      text-transform: uppercase;
-      font-size: 13px;
-      font-weight: bold;
-      letter-spacing: 0.1em;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      text-align: center;
-    }
-    .module-btn:hover, .module-btn.active {
-      background: rgba(56,189,248,0.1);
-      border-color: var(--cyan);
-      box-shadow: 0 0 20px rgba(56,189,248,0.2);
-    }
-    .module-details {
-      grid-column: 1 / -1;
-      border: 1px solid var(--cyan);
-      padding: 16px;
-      background: rgba(56,189,248,0.05);
-      font-family: var(--font-mono);
-      font-size: 12px;
-      display: none;
-    }
-    .module-details.open { display: block; animation: slideDown 0.3s ease-out; }
-
-    @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
-
-    /* Security */
-    .audit-log {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      height: 200px;
-      overflow-y: hidden;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .log-entry { opacity: 0.8; }
-    .log-time { color: var(--cyan); margin-right: 8px; }
+    .mod-btn:hover, .mod-btn.selected { background: rgba(56,189,248,0.1); border-color: var(--cyan); box-shadow: 0 0 20px rgba(56,189,248,0.2); }
     
-    .sec-block {
-      border: 1px solid var(--border);
-      padding: 12px;
-      font-family: var(--font-mono);
-      font-size: 11px;
-    }
+    .mod-detail h2 { color: var(--text-main); margin-bottom: 12px; font-size: 20px; }
+    .mod-detail .dt { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+    .mod-detail ul { padding-left: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--cyan); line-height: 1.8; }
 
-    .data-boundary {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      padding: 8px;
-      background: rgba(0,0,0,0.5);
-    }
-
-    /* Toggles & Buttons */
-    .toggle-switch {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-muted);
-    }
-    .toggle-track {
-      width: 40px; height: 20px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid var(--border);
-      position: relative;
-      transition: 0.3s;
-    }
-    .toggle-thumb {
-      width: 16px; height: 16px;
-      background: var(--text-muted);
-      position: absolute;
-      top: 1px; left: 1px;
-      transition: 0.3s;
-    }
-    input:checked + .toggle-track {
-      background: rgba(56,189,248,0.2);
-      border-color: var(--cyan);
-    }
-    input:checked + .toggle-track .toggle-thumb {
-      background: var(--cyan);
-      transform: translateX(20px);
-      box-shadow: 0 0 10px var(--cyan);
-    }
-
-    .use-case-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .uc-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 10px;
-      font-size: 11px;
-      font-family: var(--font-mono);
-      cursor: pointer;
-      transition: 0.2s;
-      text-align: center;
-    }
-    .uc-btn:hover { background: rgba(56,189,248,0.1); color: var(--text-main); border-color: var(--cyan); }
+    /* TAB 3: OPERATIONS */
+    #tab-ops { padding: 20px; display: none; flex-direction: column; gap: 20px; align-items: center; justify-content: center; }
+    #tab-ops.active { display: flex; }
     
-    .demo-footer {
-      text-align: center;
-      padding: 16px;
-      border-top: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      background: var(--bg-panel);
-    }
+    .ops-toggle-container { display: flex; align-items: center; gap: 16px; font-size: 14px; font-weight: bold; letter-spacing: 0.1em; color: var(--text-muted); }
+    .switch { position: relative; width: 60px; height: 28px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.1); border: 1px solid var(--border); transition: .3s; }
+    .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background: var(--text-muted); transition: .3s; }
+    input:checked + .slider { background: rgba(56,189,248,0.2); border-color: var(--cyan); box-shadow: 0 0 15px rgba(56,189,248,0.4); }
+    input:checked + .slider:before { transform: translateX(32px); background: var(--cyan); box-shadow: 0 0 10px var(--cyan); }
+    
+    .ops-stage { width: 100%; max-width: 900px; height: 300px; border: 1px solid var(--border); background: rgba(0,0,0,0.5); position: relative; display: flex; align-items: center; justify-content: space-between; padding: 40px; }
+    .stage-node { border: 1px solid var(--cyan); background: rgba(56,189,248,0.05); padding: 20px; text-align: center; color: var(--cyan); font-family: var(--font-mono); font-size: 14px; width: 180px; transition: 0.3s; }
+    .multi-agents { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .ma-node { border: 1px solid rgba(255,255,255,0.1); padding: 10px; font-size: 10px; color: var(--text-muted); transition: 0.3s; }
+    
+    .anim-arr { flex: 1; height: 2px; background: rgba(56,189,248,0.2); position: relative; margin: 0 20px; }
+    .anim-arr::after { content: ''; position: absolute; top:-3px; left:0; width: 20px; height: 8px; background: var(--cyan); opacity: 0; box-shadow: 0 0 10px var(--cyan); }
+    
+    body.multi-on .ma-node { border-color: var(--cyan); color: var(--cyan); box-shadow: inset 0 0 15px rgba(56,189,248,0.2); }
+    body.multi-on .anim-arr::after { animation: flowArr 1s linear infinite; opacity: 1; }
+    @keyframes flowArr { 0% { left: 0%; } 100% { left: 100%; } }
+    
+    .ops-status { font-family: var(--font-mono); color: var(--cyan); text-align: center; line-height: 1.8; }
 
-    .arch-view {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border: 1px solid var(--border);
-      padding: 16px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--cyan);
-      background: rgba(0,0,0,0.3);
+    /* TAB 4: 3D MAP */
+    #tab-map { position: absolute; inset: 0; display: none; background: #01040a; overflow: hidden; }
+    #tab-map.active { display: block; }
+    
+    .scene-shell { position: absolute; inset: 0; perspective: 1800px; transform-style: preserve-3d; cursor: grab; }
+    .scene-shell:active { cursor: grabbing; }
+    .system { position: absolute; left: 50%; top: 50%; width: 1100px; height: 1100px; transform-style: preserve-3d; margin-left: -550px; margin-top: -550px; }
+    .tilt { position: absolute; inset: 0; transform-style: preserve-3d; transform: rotateX(55deg) rotateZ(0deg); }
+    
+    .plane-ring { position: absolute; inset: 50% auto auto 50%; border-radius: 50%; border: 1px solid rgba(56,189,248,0.12); transform-style: preserve-3d; }
+    .ring-core { width: 220px; height: 220px; margin: -110px 0 0 -110px; }
+    .ring-gov { width: 380px; height: 380px; margin: -190px 0 0 -190px; }
+    .ring-mod { width: 600px; height: 600px; margin: -300px 0 0 -300px; }
+    
+    .node-wrap { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; z-index: 2; cursor: pointer; }
+    .node-card {
+      border: 1px solid var(--border); padding: 10px 14px; background: rgba(10,15,25,0.85);
+      border-radius: 4px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      text-align: center; color: var(--text-main); font-size: 11px; font-weight: bold;
+      transition: 0.2s; pointer-events: none; white-space: nowrap; font-family: var(--font-mono);
     }
-    .arch-node {
-      border: 1px solid var(--border-accent);
-      padding: 8px 12px;
-      background: rgba(56,189,248,0.05);
-      text-align: center;
-    }
-    .arch-arr { opacity: 0.5; }
+    .node-card.up { border-bottom: 2px solid var(--green); }
+    .node-card.warn { border-bottom: 2px solid var(--amber); }
+    .node-wrap:hover .node-card { border-color: var(--cyan); box-shadow: 0 0 15px rgba(56,189,248,0.4); transform: translateZ(10px) scale(1.1); }
+    
+    .map-ui { position: absolute; right: 20px; top: 20px; width: 300px; z-index: 10; pointer-events: none; }
+    .map-ui-panel { pointer-events: auto; }
+    .map-controls { display: flex; gap: 8px; margin-top: 12px; pointer-events: auto; }
+    .map-btn { border: 1px solid var(--border); background: rgba(0,0,0,0.6); color: var(--cyan); padding: 8px 12px; cursor: pointer; font-size: 10px; text-transform: uppercase; font-family: var(--font-mono); flex: 1; }
+
+    .connector-layer { position: absolute; inset: 0; pointer-events: none; transform-style: preserve-3d; }
+    .connector { position: absolute; left: 50%; top: 50%; height: 1px; transform-origin: 0 50%; background: linear-gradient(90deg, rgba(56,189,248,0.5), rgba(56,189,248,0.1)); }
+    .core-orb { position: absolute; left: 50%; top: 50%; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #0ea5e9); box-shadow: 0 0 30px #38bdf8; transform: translateZ(20px); }
+
+    /* TAB 5: SECURITY */
+    #tab-security { padding: 20px; display: none; gap: 20px; grid-template-columns: 350px 1fr; }
+    #tab-security.active { display: grid; }
+    
+    .sec-audit { height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.8); border: 1px solid rgba(255,0,0,0.2); padding: 16px; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); overflow: hidden; }
+    .sec-audit .time { color: var(--amber); margin-right: 8px; }
+    .sec-audit .log-line { margin-bottom: 6px; }
+    
+    .sec-item { display: flex; justify-content: space-between; padding: 12px; border: 1px solid var(--border); margin-bottom: 12px; background: rgba(0,0,0,0.4); font-family: var(--font-mono); font-size: 12px; }
 
   </style>
   <link rel="stylesheet" href="chatbot.css">
 </head>
 <body>
-  <div class="crt-overlay"></div>
-  
-  <header>
-    <div class="brand">
-      <h1>GRACE-X AI Operations Platform</h1>
-      <p>Deploy, orchestrate, and scale AI agents across secure environments</p>
-    </div>
-    <div class="hero-stats">
-      <div class="stat-item">
-        <span class="stat-val green"><span class="pulse"></span>ACTIVE</span>
-        <span class="stat-label">SYSTEM STATUS</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val cyan">12</span>
-        <span class="stat-label">ACTIVE AGENTS</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val cyan" id="tasks-running">47</span>
-        <span class="stat-label">TASKS RUNNING</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-val">99.98%</span>
-        <span class="stat-label">UPTIME</span>
-      </div>
-    </div>
-  </header>
 
-  <div class="dashboard-container">
-    
-    <!-- LEFT PANEL: AI OPS -->
-    <div class="panel">
-      <div class="panel-header">AI Operations Dashboard</div>
-      <div class="panel-content">
-        
-        <div class="agent-grid">
-          <div class="agent-card" id="agent-1">
-            <div>
-              <div class="agent-name">GOV Assistant</div>
-              <div class="agent-info">Tasks: <span id="gov-tasks">14</span> | Load: <span id="gov-load">42</span>%</div>
-            </div>
-            <div class="agent-status" id="gov-status">ACTIVE</div>
-          </div>
-          <div class="agent-card" id="agent-2">
-            <div>
-              <div class="agent-name">Data Analyst</div>
-              <div class="agent-info">Tasks: 8 | Load: 88%</div>
-            </div>
-            <div class="agent-status">ACTIVE</div>
-          </div>
-          <div class="agent-card" id="agent-3">
-            <div>
-              <div class="agent-name">Compliance Monitor</div>
-              <div class="agent-info">Tasks: 21 | Load: 15%</div>
-            </div>
-            <div class="agent-status">ACTIVE</div>
-          </div>
-          <div class="agent-card idle" id="agent-4">
-            <div>
-              <div class="agent-name">Automation Engine</div>
-              <div class="agent-info">Tasks: 4 | Load: 5%</div>
-            </div>
-            <div class="agent-status idle">IDLE</div>
-          </div>
-        </div>
-
-        <div class="task-flow" id="task-flow-vis">
-          INPUT &rarr; [ MULTI-AGENT ENGINE ] &rarr; OUTPUT
-        </div>
-
-        <div class="load-bars">
-          <div class="load-bar-group">
-            <div id="cpu-label">SYS CPU [48%]</div>
-            <div class="bar-bg"><div class="bar-fill" id="cpu-bar" style="width: 48%"></div></div>
-          </div>
-          <div class="load-bar-group">
-            <div id="mem-label">SYS MEM [62%]</div>
-            <div class="bar-bg"><div class="bar-fill" id="mem-bar" style="width: 62%"></div></div>
-          </div>
-          <div class="load-bar-group">
-            <div id="aiload-label">AI ORCHESTRATION LOAD [88%]</div>
-            <div class="bar-bg"><div class="bar-fill high" id="aiload-bar" style="width: 88%"></div></div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- MIDDLE PANEL: MODULES -->
-    <div class="panel">
-      <div class="panel-header">
-        <span>Deployment Modules</span>
-        <label class="toggle-switch">
-          <input type="checkbox" id="multi-agent-toggle" style="display:none;">
-          <div class="toggle-track"><div class="toggle-thumb"></div></div>
-          Multi-Agent Task Execution
-        </label>
-      </div>
-      <div class="panel-content">
-        <div class="modules-grid">
-          <div class="module-btn" onclick="toggleModule('Core')">Core</div>
-          <div class="module-btn" onclick="toggleModule('Uplift')">Uplift</div>
-          <div class="module-btn" onclick="toggleModule('Builder')">Builder</div>
-          <div class="module-btn" onclick="toggleModule('SiteOps')">SiteOps</div>
-          <div class="module-btn" onclick="toggleModule('TradeLink')">TradeLink</div>
-          <div class="module-btn" onclick="toggleModule('Creator')">Creator</div>
-          <div class="module-btn" onclick="toggleModule('StreetSafe')" style="grid-column: 2 / 3;">StreetSafe</div>
-
-          <div class="module-details" id="module-details">
-            <h3 id="mod-title" style="color:var(--text-main); font-family:var(--font-ui); margin-bottom:8px;">Core Layer</h3>
-            <p style="color:var(--cyan); margin-bottom:8px;">Capabilities: <span id="mod-cap" style="color:var(--text-muted)">Deep orchestration, semantic routing, task delegation.</span></p>
-            <p style="color:var(--cyan); margin-bottom:8px;">Active Tasks: <span id="mod-tasks" style="color:var(--text-muted)">24 running</span></p>
-            <p style="color:var(--cyan);">Integration Status: <span style="color:var(--green)">SECURE - GOV NET</span></p>
-          </div>
-        </div>
-
-        <div style="flex:1;"></div>
-        
-        <div class="panel-header" style="background:transparent; border-top:1px solid var(--border); margin:16px -16px 0; padding-top:16px; border-bottom:0;">
-          Simulated Workflows
-        </div>
-        <div class="use-case-buttons">
-          <button class="uc-btn" onclick="runSimulation('GOV.UK Assistant')">GOV.UK Assistant</button>
-          <button class="uc-btn" onclick="runSimulation('Ops Automation')">Internal Ops Automation</button>
-          <button class="uc-btn" onclick="runSimulation('Decision Support')">Decision Support</button>
-          <button class="uc-btn" onclick="runSimulation('Case Analysis')">Case Analysis</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT PANEL: SECURITY -->
-    <div class="panel">
-      <div class="panel-header">Security & Audit Layer</div>
-      <div class="panel-content">
-        
-        <div class="sec-block">
-          <div style="color:var(--cyan); margin-bottom:12px;">ROLE-BASED ACCESS</div>
-          <div style="margin-bottom:4px;">Admin: <span style="color:var(--green); float:right;">[ SECURE ]</span></div>
-          <div style="margin-bottom:4px;">Operator: <span style="color:var(--green); float:right;">[ SECURE ]</span></div>
-          <div>Viewer: <span style="color:var(--amber); float:right;">[ RESTRICTED ]</span></div>
-          
-          <div class="data-boundary" style="margin-top:16px;">
-            <span>Internal Boundary</span>
-            <span style="color:var(--green)">[ GREEN ]</span>
-          </div>
-          <div class="data-boundary">
-            <span>External Sandbox</span>
-            <span style="color:var(--amber)">[ AMBER ]</span>
-          </div>
-        </div>
-
-        <div style="color:var(--cyan); font-size:11px; margin-top:8px;">LIVE AUDIT TRAIL</div>
-        <div class="sec-block" style="flex:1;">
-          <div class="audit-log" id="audit-log">
-            <!-- Logs injected by JS -->
-          </div>
-        </div>
-
-        <div class="arch-view">
-          <div class="arch-node">USER</div>
-          <div class="arch-arr">&rarr;</div>
-          <div class="arch-node">GRACE-X CORE</div>
-          <div class="arch-arr">&rarr;</div>
-          <div class="arch-node">AGENTS</div>
-        </div>
-      </div>
-    </div>
-
+  <div id="boot-seq">
+    <div class="boot-line">INITIALISING GRACE-X CORE... [OK]</div>
+    <div class="boot-line">LOADING AGENTS... [OK]</div>
+    <div class="boot-line">CONNECTING MODULES... [OK]</div>
+    <div class="boot-line">ESTABLISHING CONTROL LAYER... [OK]</div>
+    <div class="boot-line" style="color:var(--cyan); margin-top:20px; font-size:18px;">STATUS: ACTIVE</div>
   </div>
 
-  <div class="demo-footer">
-    Demonstration Environment: This interface represents a prototype AI Operations layer designed for deployment within secure government and enterprise infrastructure.
-    <br><br>
-    GRACE-X is a modular AI orchestration platform enabling organisations to deploy, manage, and scale AI agents across secure infrastructure with full auditability and control.
+  <nav>
+    <div class="brand">GRACE-X OS</div>
+    <button class="nav-btn active" data-tab="tab-system">SYSTEM</button>
+    <button class="nav-btn" data-tab="tab-modules">MODULES</button>
+    <button class="nav-btn" data-tab="tab-ops">OPERATIONS</button>
+    <button class="nav-btn" data-tab="tab-map">3D MAP</button>
+    <button class="nav-btn" data-tab="tab-security">SECURITY</button>
+  </nav>
+
+  <!-- TAB 1: SYSTEM -->
+  <div id="tab-system" class="tab-content active">
+    <div class="panel">
+      <div class="panel-header">System Status</div>
+      <div class="panel-body">
+        <div class="status-row"><span>SYSTEM</span><span class="status-val" style="color:var(--green);"><span class="pulse"></span>ACTIVE</span></div>
+        <div class="status-row"><span>UPTIME</span><span class="status-val">99.98%</span></div>
+        <div class="status-row"><span>AGENTS</span><span class="status-val">12</span></div>
+        <div class="status-row"><span>TASKS</span><span class="status-val" id="sys-tasks">47</span></div>
+        <div class="status-row"><span>SYS LOAD</span><span class="status-val" id="sys-load">68%</span></div>
+        <div class="status-row" style="margin-top:20px; border:none;">
+          <div style="width:100%; height:4px; background:rgba(255,255,255,0.1);"><div id="load-bar" style="width:68%; height:100%; background:var(--cyan); box-shadow:0 0 10px var(--cyan);"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Agent Grid</div>
+      <div class="panel-body agent-grid">
+        <div class="agent-box">
+          <div class="ag-name">DATA ANALYST</div>
+          <div class="ag-stat"><span>STATUS:</span><span style="color:var(--green)">ACTIVE</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>45%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>6</span></div>
+        </div>
+        <div class="agent-box">
+          <div class="ag-name">COMPLIANCE BOT</div>
+          <div class="ag-stat"><span>STATUS:</span><span style="color:var(--green)">ACTIVE</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>12%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>1</span></div>
+        </div>
+        <div class="agent-box">
+          <div class="ag-name">ROUTING ENGINE</div>
+          <div class="ag-stat"><span>STATUS:</span><span style="color:var(--amber)">BUSY</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>89%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>34</span></div>
+        </div>
+        <div class="agent-box">
+          <div class="ag-name">GOV INTERFACE</div>
+          <div class="ag-stat"><span>STATUS:</span><span style="color:var(--green)">ACTIVE</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>21%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>4</span></div>
+        </div>
+        <div class="agent-box">
+          <div class="ag-name">SYSTEM AUDITOR</div>
+          <div class="ag-stat"><span>STATUS:</span><span style="color:var(--green)">ACTIVE</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>5%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>0</span></div>
+        </div>
+        <div class="agent-box" style="border-color:rgba(255,255,255,0.1); color:var(--text-muted);">
+          <div class="ag-name" style="color:var(--text-muted)">REPORT BUILDER</div>
+          <div class="ag-stat"><span>STATUS:</span><span>IDLE</span></div>
+          <div class="ag-stat"><span>LOAD:</span><span>0%</span></div>
+          <div class="ag-stat"><span>TASKS:</span><span>0</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">Live Log Stream</div>
+      <div class="panel-body sys-log" id="sys-log"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: MODULES -->
+  <div id="tab-modules" class="tab-content">
+    <div class="panel">
+      <div class="panel-header">Component Library</div>
+      <div class="panel-body mod-grid">
+        <div class="mod-btn selected" onclick="selMod(this, 'CORE')">CORE</div>
+        <div class="mod-btn" onclick="selMod(this, 'UPLIFT')">UPLIFT</div>
+        <div class="mod-btn" onclick="selMod(this, 'BUILDER')">BUILDER</div>
+        <div class="mod-btn" onclick="selMod(this, 'SITEOPS')">SITEOPS</div>
+        <div class="mod-btn" onclick="selMod(this, 'TRADELINK')">TRADELINK</div>
+        <div class="mod-btn" onclick="selMod(this, 'CREATOR')">CREATOR</div>
+        <div class="mod-btn" onclick="selMod(this, 'STREETSAFE')" style="grid-column:2/3">STREETSAFE</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Module Telemetry</div>
+      <div class="panel-body mod-detail" id="mod-detail-pane">
+        <h2>MODULE: CORE</h2>
+        <div class="dt">STATUS: <span style="color:var(--green)">ACTIVE</span></div>
+        <div class="dt">LOAD: <span style="color:var(--cyan)">68%</span></div>
+        <div class="dt">TASKS: <span style="color:var(--cyan)">47</span></div>
+        <div class="dt" style="color:var(--text-main); margin-top:20px;">CAPABILITIES:</div>
+        <ul>
+          <li>Deep task orchestration</li>
+          <li>Semantic agent routing</li>
+          <li>System-wide data capture</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: OPERATIONS -->
+  <div id="tab-ops" class="tab-content">
+    <div class="ops-toggle-container">
+      MULTI-AGENT MODE:
+      <label class="switch">
+        <input type="checkbox" id="ma-toggle">
+        <span class="slider"></span>
+      </label>
+      <span id="ma-state-text" style="color:var(--text-muted);">OFF</span>
+    </div>
+
+    <div class="ops-stage">
+      <div class="stage-node">INPUT<br><span style="font-size:10px;color:var(--text-muted);margin-top:4px;display:block;">Req #8841</span></div>
+      <div class="anim-arr"></div>
+      
+      <div class="stage-node multi-agents" style="width:280px;">
+        <div class="ma-node">Data Analyst</div>
+        <div class="ma-node">Gov Intel</div>
+        <div class="ma-node">Auditor</div>
+        <div class="ma-node">Compiler</div>
+      </div>
+
+      <div class="anim-arr"></div>
+      <div class="stage-node">OUTPUT<br><span style="font-size:10px;color:var(--text-muted);margin-top:4px;display:block;">Secure Return</span></div>
+    </div>
+
+    <div class="ops-status" id="ops-status">
+      TASK: IDLE<br>
+      AGENTS COLLABORATING: 0<br>
+      STATUS: WAITING
+    </div>
+  </div>
+
+  <!-- TAB 4: 3D MAP -->
+  <div id="tab-map" class="tab-content">
+    <div class="scene-shell" id="sceneShell">
+      <div class="system">
+        <div class="tilt" id="tilt">
+          <div class="plane-ring ring-out"></div>
+          <div class="plane-ring ring-mod"></div>
+          <div class="plane-ring ring-gov"></div>
+          <div class="plane-ring ring-core"></div>
+          <div class="connector-layer" id="connectorLayer"></div>
+          <div class="core-orb"></div>
+        </div>
+      </div>
+    </div>
+    <div class="map-ui">
+      <div class="panel map-ui-panel">
+        <div class="panel-header">Node Telemetry</div>
+        <div class="panel-body" style="font-family:var(--font-mono); font-size:12px;">
+          <div id="map-info-title" style="color:var(--cyan); font-weight:bold; font-size:16px; margin-bottom:12px;">SYSTEM CORE</div>
+          <div>STATUS: <span id="map-info-stat" style="color:var(--green)">ACTIVE</span></div>
+          <div style="margin:8px 0;">TASKS: <span id="map-info-tasks" style="color:var(--text-main)">14</span></div>
+          <div>LOAD: <span id="map-info-load" style="color:var(--cyan)">62%</span></div>
+        </div>
+      </div>
+      <div class="map-controls">
+        <button class="map-btn" id="map-reset">Reset Cam</button>
+        <button class="map-btn" id="map-auto">Auto-Rot: ON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 5: SECURITY -->
+  <div id="tab-security" class="tab-content">
+    <div class="panel">
+      <div class="panel-header">Security Profile</div>
+      <div class="panel-body">
+        <div class="sec-item"><span>USER ROLE</span><span style="color:var(--cyan)">ADMIN</span></div>
+        <div class="sec-item"><span>ACCESS LEVEL</span><span style="color:var(--cyan)">FULL</span></div>
+        <div class="sec-item"><span>AUDIT</span><span style="color:var(--green)">ACTIVE</span></div>
+        <div class="sec-item"><span>DATA FLOW</span><span style="color:var(--green)">CONTROLLED</span></div>
+        <div class="sec-item"><span>EXT. ACCESS</span><span style="color:var(--amber)">RESTRICTED</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-header">Action Audit Log</div>
+      <div class="sec-audit" id="sec-audit"></div>
+    </div>
+  </div>
+
+  <div style="position:fixed; bottom:0; width:100%; border-top:1px solid var(--border); background:rgba(2,6,17,0.9); padding:8px 20px; font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-align:center; z-index:90;">
+    GRACE-X is a modular AI orchestration platform enabling secure deployment, management, and scaling of AI agents across controlled infrastructure.
   </div>
 
   <script>
-    // Audit Log logic
-    const auditLog = document.getElementById('audit-log');
-    const logs = [
-      "User Auth_Gov confirmed via Token",
-      "Agent Data_Analyst processed request #8843",
-      "Network Handshake: Internal Boundary Secure",
-      "System Load balanced across Nodes",
-      "User Operator_2 requested Task #102",
-      "Task completion: 144ms",
-      "Agent Compliance_Monitor flagged payload 0x44",
-      "Threat Logic bypass denied",
-      "Memory reallocation triggered",
-      "Syncing with Central Command",
-      "Query executed spanning 4 Core layers",
-      "Validation hash passed"
-    ];
+    // Boot sequence
+    const bootLines = document.querySelectorAll('.boot-line');
+    const bootSeq = document.getElementById('boot-seq');
+    let t = 0;
+    bootLines.forEach((l, i) => {
+      setTimeout(() => { l.style.opacity = 1; }, t);
+      t += 500;
+    });
+    setTimeout(() => { bootSeq.style.display = 'none'; }, t + 800);
 
-    function addLog() {
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      const time = new Date().toISOString().split('T')[1].slice(0,8);
-      entry.innerHTML = `<span class="log-time">[${time}]</span> ${logs[Math.floor(Math.random() * logs.length)]}`;
-      auditLog.prepend(entry);
-      if (auditLog.children.length > 15) {
-        auditLog.removeChild(auditLog.lastChild);
-      }
-    }
-    setInterval(addLog, 1200);
-    for(let i=0; i<6; i++) addLog();
-
-    // Module clicking
-    const modDetails = document.getElementById('module-details');
-    const modTitle = document.getElementById('mod-title');
-    const modCap = document.getElementById('mod-cap');
-    const descriptions = {
-      'Core': 'Deep orchestration, semantic routing, task delegation.',
-      'Uplift': 'Wellness, mentoring, human-centered assistance.',
-      'Builder': 'Construction workflows, scheduling, ops support.',
-      'SiteOps': 'Field coordination, live operational intelligence.',
-      'TradeLink': 'Compliance, legislation awareness, routing.',
-      'Creator': 'Media production, idea generation, execution.',
-      'StreetSafe': 'Active security, patrol logic, monitoring.'
-    };
-
-    function toggleModule(name) {
-      document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      modTitle.textContent = name + ' Layer';
-      modCap.textContent = descriptions[name] || 'Active processing layer.';
-      document.getElementById('mod-tasks').textContent = Math.floor(Math.random()*50 + 5) + ' running';
-      modDetails.classList.add('open');
-      
-      // small animation reset
-      modDetails.style.animation = 'none';
-      modDetails.offsetHeight; // trigger reflow
-      modDetails.style.animation = null; 
-    }
-
-    // Multi-Agent Mode
-    const toggle = document.getElementById('multi-agent-toggle');
-    const agents = document.querySelectorAll('.agent-card');
-    toggle.addEventListener('change', (e) => {
-      const active = e.target.checked;
-      agents.forEach(a => {
-        if (active) a.classList.add('active-collaboration');
-        else a.classList.remove('active-collaboration');
+    // Tabs
+    const tabs = document.querySelectorAll('.nav-btn');
+    const contents = document.querySelectorAll('.tab-content');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(b => b.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
       });
-      const tf = document.getElementById('task-flow-vis');
+    });
+
+    // Logging
+    const sysLog = document.getElementById('sys-log');
+    const secLog = document.getElementById('sec-audit');
+    const msgs = ["Agent-2 activated", "Task received via secure socket", "Routing to Analyst", "Output generated", "Audit logged locally", "Memory allocated OK", "Network check passed"];
+    const secMsgs = ["User login verified", "Agent execution approved", "Data boundary enforced", "Threat check: Clean", "Key swapped successfully", "Access token verified"];
+
+    function addLog(container, pool) {
+      if(!container) return;
+      const d = new Date();
+      const time = `[${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}]`;
+      const txt = pool[Math.floor(Math.random()*pool.length)];
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="time">${time}</span> <span>${txt}</span>`;
+      container.append(line);
+      container.scrollTop = container.scrollHeight;
+    }
+    setInterval(() => addLog(sysLog, msgs), 1500);
+    setInterval(() => addLog(secLog, secMsgs), 2500);
+    for(let i=0;i<10;i++) { addLog(sysLog, msgs); addLog(secLog, secMsgs); }
+
+    // Modules
+    const modData = {
+      'CORE': ['Deep task orchestration','Semantic agent routing','System-wide data capture'],
+      'UPLIFT': ['Stress indicator analysis','Mentoring workflows','Daily stand-up aggregation'],
+      'BUILDER': ['Measurement analysis','Workflow automation','Data capture on site'],
+      'SITEOPS': ['Field asset tracking','Live ops dashboarding','Coordination tasks'],
+      'TRADELINK': ['Compliance auditing','Supply chain tracking','Legislation parsing'],
+      'CREATOR': ['Asset compilation','Brief extraction','Media processing'],
+      'STREETSAFE': ['Patrol data aggregation','Risk monitoring','Live camera parsing']
+    };
+    function selMod(el, name) {
+      document.querySelectorAll('.mod-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      const pane = document.getElementById('mod-detail-pane');
+      const ld = Math.floor(Math.random()*40+20);
+      const tk = Math.floor(Math.random()*15+2);
+      let lis = '';
+      modData[name].forEach(c => lis += `<li>${c}</li>`);
+      pane.innerHTML = `
+        <h2>MODULE: ${name}</h2>
+        <div class="dt">STATUS: <span style="color:var(--green)">ACTIVE</span></div>
+        <div class="dt">LOAD: <span style="color:var(--cyan)">${ld}%</span></div>
+        <div class="dt">TASKS: <span style="color:var(--cyan)">${tk}</span></div>
+        <div class="dt" style="color:var(--text-main); margin-top:20px;">CAPABILITIES:</div>
+        <ul>${lis}</ul>
+      `;
+    }
+
+    // Operations
+    const maToggle = document.getElementById('ma-toggle');
+    const maState = document.getElementById('ma-state-text');
+    const opsStatus = document.getElementById('ops-status');
+    maToggle.addEventListener('change', (e) => {
+      const active = e.target.checked;
       if(active) {
-        tf.innerHTML = 'INPUT &rarr; <span style="color:var(--text-main);font-weight:bold;">[ AGENTS COLLABORATING ON TASK ]</span> &rarr; OUTPUT';
-        tf.style.background = 'repeating-linear-gradient(45deg, rgba(34,197,94,0.05) 0px, rgba(34,197,94,0.05) 10px, transparent 10px, transparent 20px)';
-        tf.style.color = 'var(--green)';
+        document.body.classList.add('multi-on');
+        maState.textContent = 'ON';
+        maState.style.color = 'var(--cyan)';
+        opsStatus.innerHTML = 'TASK: <span style="color:var(--green)">ACTIVE</span><br>AGENTS COLLABORATING: <span style="color:var(--cyan)">4</span><br>STATUS: <span style="color:var(--amber)">PROCESSING</span>';
       } else {
-        tf.innerHTML = 'INPUT &rarr; [ MULTI-AGENT ENGINE ] &rarr; OUTPUT';
-        tf.style.background = 'repeating-linear-gradient(45deg, rgba(56,189,248,0.02) 0px, rgba(56,189,248,0.02) 10px, transparent 10px, transparent 20px)';
-        tf.style.color = 'var(--cyan)';
+        document.body.classList.remove('multi-on');
+        maState.textContent = 'OFF';
+        maState.style.color = 'var(--text-muted)';
+        opsStatus.innerHTML = 'TASK: IDLE<br>AGENTS COLLABORATING: 0<br>STATUS: WAITING';
       }
     });
 
-    // Simulated Workflows
-    function runSimulation(type) {
-      const tf = document.getElementById('task-flow-vis');
-      const oldHtml = tf.innerHTML;
-      tf.innerHTML = `<span style="color:var(--amber)">PROCESSING [${type}]...</span> &rarr; [ AGENTS RUNNING ] &rarr; <span class="pulse" style="background:var(--amber);box-shadow:none;"></span>`;
-      
-      const eventLog = `User Operator_2 requested workflow: ${type}`;
-      const entry = document.createElement('div');
-      entry.className = 'log-entry';
-      const time = new Date().toISOString().split('T')[1].slice(0,8);
-      entry.innerHTML = `<span class="log-time">[${time}]</span> <span style="color:var(--amber)">${eventLog}</span>`;
-      auditLog.prepend(entry);
-      
-      // Update Agent 1 load
-      if (type === 'GOV.UK Assistant') {
-        document.getElementById('gov-status').innerText = 'BUSY';
-        document.getElementById('gov-status').style.color = 'var(--amber)';
-        document.getElementById('gov-load').innerText = '92';
-        document.getElementById('agent-1').classList.add('active-collaboration');
-      }
+    // 3D MAP ENGINE
+    const tilt = document.getElementById('tilt');
+    const sceneShell = document.getElementById('sceneShell');
+    const connectorLayer = document.getElementById('connectorLayer');
+    
+    // Nodes Setup
+    // R1: 190, R2: 300, R3: 390
+    const mapNodes = [
+      { id:'gov1', name:'SENTINEL', r:190, a:0, status:'up' },
+      { id:'gov2', name:'VENUS', r:190, a:120, status:'warn' },
+      { id:'gov3', name:'TITAN', r:190, a:240, status:'up' },
+      { id:'mod1', name:'CORE', r:300, a:30, status:'up' },
+      { id:'mod2', name:'BUILDER', r:300, a:100, status:'up' },
+      { id:'mod3', name:'SITEOPS', r:300, a:170, status:'warn' },
+      { id:'mod4', name:'CREATOR', r:300, a:240, status:'up' },
+      { id:'mod5', name:'UPLIFT', r:300, a:310, status:'up' },
+      { id:'out1', name:'MOBILE', r:390, a:15, status:'up' },
+      { id:'out2', name:'WEB', r:390, a:135, status:'warn' },
+      { id:'out3', name:'API', r:390, a:255, status:'up' },
+    ];
 
-      setTimeout(() => {
-        tf.innerHTML = `INPUT [${type}] &rarr; [ MULTI-AGENT ENGINE ] &rarr; <span style="color:var(--green)">OUTPUT SECURE</span>`;
-        if (type === 'GOV.UK Assistant') {
-          setTimeout(() => {
-            document.getElementById('gov-status').innerText = 'ACTIVE';
-            document.getElementById('gov-status').style.color = 'var(--green)';
-            document.getElementById('gov-load').innerText = Math.floor(Math.random() * 30 + 30);
-            if (!document.getElementById('multi-agent-toggle').checked) {
-              document.getElementById('agent-1').classList.remove('active-collaboration');
-            }
-          }, 1000);
-        }
-      }, 1400);
+    function polar(r, a) { const rad=a*Math.PI/180; return {x:Math.cos(rad)*r, y:Math.sin(rad)*r}; }
+
+    mapNodes.forEach(n => {
+      const el = document.createElement('div');
+      el.className = 'node-wrap';
+      const p = polar(n.r, n.a);
+      el.style.transform = `translate(-50%, -50%) translate3d(${p.x}px, ${p.y}px, 20px) rotateX(-55deg)`;
+      el.innerHTML = `<div class="node-card ${n.status}">${n.name}</div>`;
       
-      let tasks = parseInt(document.getElementById('tasks-running').innerText);
-      document.getElementById('tasks-running').innerText = tasks + 1;
+      const cn = document.createElement('div');
+      cn.className = 'connector';
+      cn.style.width = `${n.r}px`;
+      cn.style.transform = `translate(0, -50%) rotate(${n.a}deg)`;
+      connectorLayer.appendChild(cn);
+      
+      el.addEventListener('click', () => {
+        document.getElementById('map-info-title').textContent = 'NODE: ' + n.name;
+        document.getElementById('map-info-stat').textContent = n.status === 'up' ? 'ACTIVE' : 'WATCH';
+        document.getElementById('map-info-stat').style.color = n.status === 'up' ? 'var(--green)' : 'var(--amber)';
+        document.getElementById('map-info-tasks').textContent = Math.floor(Math.random()*20);
+        document.getElementById('map-info-load').textContent = Math.floor(Math.random()*80) + '%';
+      });
+      tilt.appendChild(el);
+    });
+
+    // Camera logic
+    let rotX=55, rotZ=0, targetRotX=55, targetRotZ=0, zoom=1, targetZoom=1;
+    let isDragging=false, lastX=0, lastY=0;
+    let autoRot=true;
+
+    sceneShell.addEventListener('pointerdown', (e) => {
+      isDragging = true; lastX=e.clientX; lastY=e.clientY;
+      sceneShell.setPointerCapture(e.pointerId);
+    });
+    sceneShell.addEventListener('pointermove', (e) => {
+      if(!isDragging) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX=e.clientX; lastY=e.clientY;
+      targetRotZ += dx * 0.4; targetRotX = Math.max(0, Math.min(80, targetRotX - dy * 0.2));
+    });
+    const stopDrag = () => { isDragging=false; };
+    sceneShell.addEventListener('pointerup', stopDrag);
+    sceneShell.addEventListener('pointercancel', stopDrag);
+
+    sceneShell.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      targetZoom += e.deltaY > 0 ? -0.1 : 0.1;
+      targetZoom = Math.max(0.5, Math.min(2, targetZoom));
+    }, {passive:false});
+
+    function animateMap() {
+      if(autoRot && !isDragging) targetRotZ += 0.1;
+      rotX += (targetRotX - rotX)*0.1; rotZ += (targetRotZ - rotZ)*0.1; zoom += (targetZoom - zoom)*0.1;
+      tilt.style.transform = `rotateX(${rotX}deg) rotateZ(${rotZ}deg) scale(${zoom})`;
+      
+      // Keep nodes facing up relatively to camera
+      document.querySelectorAll('.node-wrap').forEach(el => {
+        el.style.transform = el.style.transform.replace(/rotateX\([-\d.]+deg\)/, `rotateX(${-rotX}deg)`);
+        el.style.transform = el.style.transform.replace(/rotateZ\([-\d.]+deg\)/, `rotateZ(${-rotZ}deg)`);
+        if(!el.style.transform.includes('rotateZ')) el.style.transform += ` rotateZ(${-rotZ}deg)`;
+      });
+
+      requestAnimationFrame(animateMap);
     }
+    animateMap();
 
-    // Dynamic load bars
-    setInterval(() => {
-      document.getElementById('cpu-bar').style.width = Math.floor(Math.random() * 20 + 40) + '%';
-      document.getElementById('cpu-label').innerText = `SYS CPU [${document.getElementById('cpu-bar').style.width}]`;
-      
-      document.getElementById('mem-bar').style.width = Math.floor(Math.random() * 10 + 60) + '%';
-      document.getElementById('mem-label').innerText = `SYS MEM [${document.getElementById('mem-bar').style.width}]`;
-      
-      document.getElementById('aiload-bar').style.width = Math.floor(Math.random() * 25 + 70) + '%';
-      document.getElementById('aiload-label').innerText = `AI ORCHESTRATION LOAD [${document.getElementById('aiload-bar').style.width}]`;
-    }, 2500);
+    document.getElementById('map-auto').addEventListener('click', (e) => {
+      autoRot = !autoRot;
+      e.target.textContent = `Auto-Rot: ${autoRot ? 'ON' : 'OFF'}`;
+      e.target.style.color = autoRot ? 'var(--cyan)' : 'var(--text-muted)';
+    });
+    document.getElementById('map-reset').addEventListener('click', () => {
+      targetRotX=55; targetRotZ=0; targetZoom=1;
+    });
 
   </script>
   <script src="chatbot.js"></script>
