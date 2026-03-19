@@ -1,1330 +1,674 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GRACE-X 3D Ecosystem Map v3</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GRACE-X | AI Operations Platform</title>
   <style>
     :root {
-      --bg-1: #020611;
-      --bg-2: #071223;
-      --panel: rgba(7, 17, 34, 0.72);
-      --text: #e9f3ff;
-      --muted: #97adca;
-      --blue: #52a7ff;
-      --cyan: #6ce1ff;
-      --violet: #8a7dff;
-      --silver: #d9e7ff;
-      --green: #52ff9c;
-      --amber: #ffc857;
-      --red: #ff5f6d;
-      --chrome-a: #f7fbff;
-      --chrome-b: #bcc8dc;
-      --chrome-c: #7488a8;
-      --glow: 0 0 26px rgba(108, 225, 255, 0.30), 0 0 90px rgba(82, 167, 255, 0.12);
-      --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      --bg: #030712;
+      --bg-panel: rgba(10, 15, 25, 0.85);
+      --border: rgba(56, 189, 248, 0.2);
+      --border-accent: rgba(56, 189, 248, 0.5);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --cyan: #38bdf8;
+      --green: #22c55e;
+      --amber: #f59e0b;
+      --font-ui: "Inter", system-ui, sans-serif;
+      --font-mono: "Courier New", Courier, monospace;
     }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      min-height: 100%;
-      background:
-        radial-gradient(circle at 50% 35%, rgba(64, 132, 225, 0.18), transparent 20%),
-        radial-gradient(circle at 16% 14%, rgba(138, 125, 255, 0.16), transparent 22%),
-        radial-gradient(circle at 84% 16%, rgba(108, 225, 255, 0.14), transparent 18%),
-        linear-gradient(180deg, var(--bg-2), var(--bg-1));
-      color: var(--text);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-ui);
       overflow-x: hidden;
-      overflow-y: auto;
-    }
-
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
-      background-size: 42px 42px;
-      mask-image: radial-gradient(circle at center, black 36%, transparent 95%);
-      pointer-events: none;
-      opacity: 0.55;
-    }
-
-    .stars, .stars::before, .stars::after {
-      position: fixed;
-      inset: 0;
-      content: "";
-      display: block;
-      pointer-events: none;
-      background-repeat: repeat;
-      animation: drift 90s linear infinite;
-    }
-
-    .stars {
-      opacity: 0.55;
-      background-image:
-        radial-gradient(circle at 10% 20%, rgba(255,255,255,.95) 0 1px, transparent 1.4px),
-        radial-gradient(circle at 70% 40%, rgba(255,255,255,.8) 0 1px, transparent 1.4px),
-        radial-gradient(circle at 30% 80%, rgba(108,225,255,.9) 0 1.1px, transparent 1.7px),
-        radial-gradient(circle at 90% 65%, rgba(138,125,255,.8) 0 1px, transparent 1.5px);
-      background-size: 380px 380px;
-    }
-
-    .stars::before {
-      opacity: 0.32;
-      background-image:
-        radial-gradient(circle at 15% 30%, rgba(255,255,255,.9) 0 1px, transparent 1.4px),
-        radial-gradient(circle at 60% 10%, rgba(108,225,255,.9) 0 1px, transparent 1.6px),
-        radial-gradient(circle at 80% 70%, rgba(255,255,255,.75) 0 1px, transparent 1.5px);
-      background-size: 520px 520px;
-      animation-duration: 120s;
-      transform: scale(1.08);
-    }
-
-    .stars::after {
-      opacity: 0.2;
-      background-image:
-        radial-gradient(circle at 25% 25%, rgba(255,255,255,.9) 0 1px, transparent 1.6px),
-        radial-gradient(circle at 85% 35%, rgba(138,125,255,.7) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 40% 82%, rgba(108,225,255,.8) 0 1px, transparent 1.5px);
-      background-size: 680px 680px;
-      animation-duration: 160s;
-      transform: scale(1.18);
-    }
-
-    @keyframes drift {
-      from { transform: translate3d(0,0,0); }
-      to { transform: translate3d(-120px,80px,0); }
-    }
-
-    .wrap {
-      position: relative;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      background-image: 
+        linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .crt-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%);
+      background-size: 100% 4px;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.3;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(180deg, rgba(14, 23, 38, 0.9), rgba(3, 7, 18, 0.9));
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .brand h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      text-shadow: 0 0 10px rgba(56,189,248,0.4);
+    }
+    .brand p {
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+    
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .stat-val {
+      color: var(--text-main);
+      font-weight: bold;
+    }
+    .stat-val.green { color: var(--green); text-shadow: 0 0 8px rgba(34,197,94,0.6); }
+    .stat-val.cyan { color: var(--cyan); text-shadow: 0 0 8px rgba(56,189,248,0.6); }
+    .stat-label { color: var(--text-muted); font-size: 10px; letter-spacing: 0.1em; }
+
+    .pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background-color: var(--green);
+      border-radius: 50%;
+      margin-right: 8px;
+      box-shadow: 0 0 12px var(--green);
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    .dashboard-container {
+      display: grid;
+      grid-template-columns: 310px 1fr 310px;
       gap: 20px;
       padding: 20px;
-      z-index: 1;
-    }
-
-    .sidebar {
-      position: relative;
-      width: 100%;
-      z-index: 10;
-      background: linear-gradient(180deg, rgba(12, 22, 44, 0.88), rgba(5, 12, 26, 0.82));
-      border: 1px solid rgba(124, 191, 255, 0.16);
-      border-radius: 24px;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(16px);
-      overflow: hidden;
-    }
-
-    .sidebar::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(108,225,255,0.05), transparent 30%, transparent 70%, rgba(138,125,255,0.05));
-      pointer-events: none;
-    }
-
-    .panel-head {
-      padding: 22px 22px 18px;
-      border-bottom: 1px solid rgba(130,190,255,0.12);
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: rgba(84, 167, 255, 0.10);
-      border: 1px solid rgba(84, 167, 255, 0.22);
-      color: var(--cyan);
-      font-size: 11px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 3vw, 38px);
-      line-height: 1.02;
-      letter-spacing: -0.04em;
-    }
-
-    .lead {
-      margin: 12px 0 0;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.6;
-      max-width: 34ch;
-    }
-
-    .controls {
-      padding: 18px 22px 22px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
-    }
-
-    .control-card, .info-card, .legend, .status-bar, .tour-card {
-      background: var(--panel);
-      border: 1px solid rgba(135, 196, 255, 0.12);
-      border-radius: 22px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
-    }
-
-    .control-card, .tour-card { padding: 14px; }
-
-    .control-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .card-title {
-      margin: 0 0 10px;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--cyan);
-    }
-
-    .button-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    button {
-      appearance: none;
-      border: 1px solid rgba(130, 205, 255, 0.18);
-      background: linear-gradient(180deg, rgba(15,30,58,0.94), rgba(8,18,37,0.94));
-      color: var(--text);
-      padding: 12px 12px;
-      border-radius: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease, background .18s ease;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.26);
-    }
-
-    button:hover, button.active {
-      transform: translateY(-1px);
-      border-color: rgba(108,225,255,0.45);
-      box-shadow: 0 0 0 1px rgba(108,225,255,0.16), 0 12px 28px rgba(0,0,0,0.3), var(--glow);
-      background: linear-gradient(180deg, rgba(22,40,74,0.98), rgba(10,22,45,0.98));
-    }
-
-    .toggle-btn.on, .tour-btn.on {
-      border-color: rgba(82,255,156,.45);
-      box-shadow: 0 0 0 1px rgba(82,255,156,.14), 0 12px 28px rgba(0,0,0,0.3), 0 0 22px rgba(82,255,156,.18);
-    }
-
-    .legend {
-      padding: 14px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .legend-row {
-      display: grid;
-      grid-template-columns: 14px 1fr;
-      gap: 10px;
-      align-items: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 999px;
-      box-shadow: 0 0 14px currentColor;
-    }
-
-    .dot.core { color: #7ed9ff; background: #7ed9ff; }
-    .dot.gov { color: #8f80ff; background: #8f80ff; }
-    .dot.mod { color: #52a7ff; background: #52a7ff; }
-    .dot.iface { color: #d9e7ff; background: #d9e7ff; }
-    .dot.up { color: #52ff9c; background: #52ff9c; }
-    .dot.warn { color: #ff5f6d; background: #ff5f6d; }
-
-    .info-card {
-      padding: 16px;
-      min-height: 210px;
-    }
-
-    .info-label {
-      margin: 0 0 8px;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--cyan);
-    }
-
-    .info-title {
-      margin: 0 0 8px;
-      font-size: 24px;
-      letter-spacing: -0.03em;
-    }
-
-    .info-desc {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .mini-stats {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0,1fr));
-      gap: 10px;
-    }
-
-    .stat {
-      padding: 12px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 17px;
-      margin-bottom: 4px;
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 12px;
-    }
-
-    .status-bar {
-      padding: 14px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .status-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 13px;
-      color: var(--muted);
-    }
-
-    .status-item strong { color: var(--text); }
-
-    .tour-copy {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-      margin: 0 0 10px;
-    }
-
-    .scene-shell {
-      position: relative;
       flex: 1;
-      width: 100%;
-      min-height: 70vh;
-      border-radius: 24px;
-      overflow: hidden;
-      border: 1px solid rgba(128, 190, 255, 0.14);
-      box-shadow: var(--shadow);
-      background:
-        radial-gradient(circle at 50% 50%, rgba(22, 56, 102, 0.22), transparent 25%),
-        linear-gradient(180deg, rgba(6, 13, 27, 0.78), rgba(4, 8, 16, 0.9));
-      perspective: 1800px;
-      transform-style: preserve-3d;
-      touch-action: none;
-      cursor: grab;
     }
-
-    .scene-shell.dragging { cursor: grabbing; }
-
-    .scene-shell::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), transparent 20%, transparent 80%, rgba(255,255,255,0.02));
-      pointer-events: none;
-    }
-
-    .hud-top {
-      position: absolute;
-      inset: 18px 18px auto 18px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      z-index: 6;
-      flex-wrap: wrap;
-    }
-
-    .hud-chip {
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(9, 18, 36, 0.72);
-      border: 1px solid rgba(130, 194, 255, 0.16);
-      color: var(--muted);
-      backdrop-filter: blur(14px);
-      font-size: 12px;
-      letter-spacing: .04em;
-    }
-    
-    .hud-help-btn {
-      cursor: pointer;
-      background: rgba(108, 225, 255, 0.12);
-      border-color: rgba(108, 225, 255, 0.3);
-      color: var(--cyan);
-      font-weight: 700;
-      transition: all 0.2s ease;
-    }
-    
-    .hud-help-btn:hover {
-      background: rgba(108, 225, 255, 0.25);
-      border-color: rgba(108, 225, 255, 0.6);
-      box-shadow: 0 0 14px rgba(108, 225, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .hud-title {
-      position: absolute;
-      top: 72px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 6;
-      pointer-events: none;
-      text-align: center;
-    }
-
-    .hud-title h2 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 48px);
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      background: linear-gradient(180deg, var(--chrome-a) 0%, var(--chrome-b) 32%, var(--chrome-c) 62%, var(--chrome-a) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 2px 20px rgba(255,255,255,.08), 0 0 26px rgba(108,225,255,.12);
-      filter: drop-shadow(0 4px 18px rgba(0,0,0,.35));
-    }
-
-    .hud-title p {
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 12px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-    }
-
-    .map-area {
-      position: absolute;
-      inset: 0;
-      display: grid;
-      place-items: center;
-      transform-style: preserve-3d;
-      isolation: isolate;
-    }
-
-    .system {
-      position: relative;
-      width: min(88vw, 1100px);
-      height: min(88vh, 880px);
-      transform-style: preserve-3d;
-      animation: masterFloat 18s ease-in-out infinite;
-    }
-
-    .tilt {
-      position: absolute;
-      inset: 0;
-      transform-style: preserve-3d;
-      transform: rotateX(14deg) rotateZ(0deg) rotateY(0deg) scale(1);
-      transition: transform .06s linear;
-    }
-
-    .plane-ring {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      border-radius: 50%;
-      transform-style: preserve-3d;
-      border: 1px solid rgba(130, 190, 255, 0.12);
-      box-shadow: inset 0 0 40px rgba(82,167,255,0.06), 0 0 40px rgba(82,167,255,0.06);
-    }
-
-    .ring-core { width: 220px; height: 220px; margin-left: -110px; margin-top: -110px; }
-    .ring-gov { width: 380px; height: 380px; margin-left: -190px; margin-top: -190px; }
-    .ring-mod { width: 600px; height: 600px; margin-left: -300px; margin-top: -300px; }
-    .ring-out { width: 780px; height: 780px; margin-left: -390px; margin-top: -390px; }
-
-    .ring-sheen {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      width: 820px;
-      height: 820px;
-      margin-left: -410px;
-      margin-top: -410px;
-      border-radius: 50%;
-      border: 1px dashed rgba(108, 225, 255, 0.08);
-      transform: rotateX(90deg) translateZ(-120px);
-      filter: blur(1px);
-      opacity: 0.7;
-    }
-
-    .vertical-column {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 2px;
-      height: 560px;
-      transform: translate(-50%, -50%) rotateX(90deg);
-      background: linear-gradient(180deg, transparent, rgba(108,225,255,0.6), transparent);
-      box-shadow: 0 0 20px rgba(108,225,255,0.35);
-      opacity: 0.7;
-    }
-
-    .core-shell {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 160px;
-      height: 160px;
-      transform-style: preserve-3d;
-      transform: translate(-50%, -50%) translateZ(54px);
-      z-index: 3;
-    }
-
-    .core-orb {
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.95), rgba(108,225,255,0.45) 18%, rgba(52, 115, 195, 0.55) 42%, rgba(12, 32, 66, 0.9) 70%, rgba(2, 9, 20, 1));
-      box-shadow: 0 0 40px rgba(108,225,255,0.4), 0 0 120px rgba(82,167,255,0.18), inset 0 -14px 40px rgba(0,0,0,0.45);
-      animation: corePulse 4.4s ease-in-out infinite;
-    }
-
-    .core-grid, .core-grid.two {
-      position: absolute;
-      inset: 12px;
-      border-radius: 50%;
-      border: 1px solid rgba(217,231,255,0.12);
-      transform-style: preserve-3d;
-    }
-
-    .core-grid { animation: spin 22s linear infinite; box-shadow: inset 0 0 24px rgba(108,225,255,0.18); }
-    .core-grid.two { inset: 22px; animation: spinReverse 16s linear infinite; border-color: rgba(138,125,255,0.22); }
-
-    .core-grid::before, .core-grid::after, .core-grid.two::before, .core-grid.two::after {
-      content: "";
-      position: absolute;
-      inset: 50% auto auto 50%;
-      width: 100%;
-      height: 1px;
-      margin-left: -50%;
-      background: linear-gradient(90deg, transparent, rgba(108,225,255,0.28), transparent);
-      transform-origin: center;
-    }
-
-    .core-grid::after { transform: rotate(60deg); }
-    .core-grid.two::before { transform: rotate(120deg); }
-    .core-grid.two::after { transform: rotate(180deg); }
-
-    .core-label {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) translateZ(110px);
-      text-align: center;
-      pointer-events: none;
-      text-shadow: 0 0 24px rgba(108,225,255,.32);
-    }
-
-    .core-label strong {
-      display: block;
-      font-size: 16px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--silver);
-    }
-
-    .core-label span {
-      display: block;
-      margin-top: 6px;
-      font-size: 11px;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: var(--cyan);
-    }
-
-    .governance-node, .module-node, .outer-node {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform-style: preserve-3d;
-      z-index: 2;
-    }
-
-    .node-card {
-      position: relative;
-      min-width: 140px;
-      max-width: 176px;
-      padding: 12px 14px 14px;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(14,26,48,0.92), rgba(6,13,25,0.92));
-      border: 1px solid rgba(130,194,255,0.18);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.34), 0 0 24px rgba(108,225,255,0.08);
-      backdrop-filter: blur(12px);
-      cursor: pointer;
-      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, opacity .2s ease;
-      user-select: none;
-    }
-
-    .governance-node .node-card {
-      border-color: rgba(138,125,255,0.28);
-      box-shadow: 0 14px 36px rgba(0,0,0,0.34), 0 0 24px rgba(138,125,255,0.10);
-    }
-
-    .outer-node .node-card {
-      min-width: 146px;
-      background: linear-gradient(180deg, rgba(18,28,44,0.90), rgba(8,14,24,0.94));
-      border-color: rgba(217,231,255,0.16);
-    }
-
-    .node-card:hover, .node-card.active {
-      transform: translateZ(16px) scale(1.03);
-      border-color: rgba(108,225,255,0.44);
-      box-shadow: 0 18px 42px rgba(0,0,0,0.38), var(--glow);
-    }
-
-    .node-top {
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:8px;
-      margin-bottom:5px;
-    }
-
-    .node-kicker {
-      font-size: 10px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--cyan);
-      opacity: .9;
-    }
-
-    .node-status {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      flex: 0 0 auto;
-      box-shadow: 0 0 14px currentColor;
-    }
-
-    .status-up .node-status { color: var(--green); background: var(--green); }
-    .status-warn .node-status { color: var(--amber); background: var(--amber); }
-    .status-alert .node-status { color: var(--red); background: var(--red); }
-
-    .node-name {
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      font-size: 16px;
-      line-height: 1.05;
-      margin-bottom: 6px;
-    }
-
-    .node-role {
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-
-    .node-pulse {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 14px;
-      height: 14px;
-      margin-left: -7px;
-      margin-top: -7px;
-      border-radius: 999px;
-      background: currentColor;
-      box-shadow: 0 0 22px currentColor;
-      animation: ping 3s ease-out infinite;
-      pointer-events: none;
-    }
-
-    .module-node { color: var(--blue); }
-    .governance-node { color: var(--violet); }
-    .outer-node { color: var(--silver); }
-    
-    .transparent-card {
-      background: rgba(4, 10, 20, 0.4) !important;
-      backdrop-filter: blur(4px) !important;
-      border: 1px solid rgba(130,194,255,0.15) !important;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.3) !important;
-      padding: 8px 12px;
-      min-width: 120px;
-      text-align: center;
-    }
-    .transparent-card .node-name { margin-bottom: 2px; }
-    .brain-icon {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 8px;
-      animation: heartBeat 1.4s ease-in-out infinite;
-      color: var(--cyan);
-      filter: drop-shadow(0 0 14px currentColor);
-    }
-    @keyframes heartBeat {
-      0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px currentColor); }
-      15% { transform: scale(1.12); filter: drop-shadow(0 0 22px currentColor); }
-      30% { transform: scale(1.04); filter: drop-shadow(0 0 14px currentColor); }
-      45% { transform: scale(1.15); filter: drop-shadow(0 0 28px currentColor); }
-      60% { transform: scale(1); filter: drop-shadow(0 0 10px currentColor); }
-    }
-    .core-shell { cursor: grab; }
-    .core-shell:active { cursor: grabbing; }
-
-    .connector-layer {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .connector {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      height: 2px;
-      transform-origin: 0 50%;
-      background: linear-gradient(90deg, rgba(108,225,255,0.7), rgba(108,225,255,0.16));
-      filter: drop-shadow(0 0 8px rgba(108,225,255,0.45));
-      opacity: .7;
-      transition: opacity .25s ease;
-      overflow: hidden;
-    }
-
-    .connector.violet {
-      background: linear-gradient(90deg, rgba(138,125,255,0.75), rgba(138,125,255,0.16));
-      filter: drop-shadow(0 0 8px rgba(138,125,255,0.38));
-    }
-
-    .connector.silver {
-      background: linear-gradient(90deg, rgba(217,231,255,0.8), rgba(217,231,255,0.16));
-      filter: drop-shadow(0 0 8px rgba(217,231,255,0.28));
-    }
-
-    .connector::after {
-      content: "";
-      position:absolute;
-      top:0;
-      left:-18%;
-      width:18%;
-      height:100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent);
-      opacity:.8;
-      animation: dataFlow 2.6s linear infinite;
-    }
-
-    .beam {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 2px;
-      height: 0;
-      transform: translate(-50%, -50%);
-      background: linear-gradient(180deg, rgba(108,225,255,0), rgba(108,225,255,.92), rgba(108,225,255,0));
-      box-shadow: 0 0 20px rgba(108,225,255,0.45);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .beam.active {
-      height: 540px;
-      opacity: 0.92;
-      animation: beamPulse 1.6s ease-in-out infinite;
-    }
-
-    .laser-ring {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 220px;
-      height: 220px;
-      margin-left: -110px;
-      margin-top: -110px;
-      border-radius: 999px;
-      border: 1px solid rgba(108,225,255,0.3);
-      box-shadow: 0 0 40px rgba(108,225,255,0.18), inset 0 0 40px rgba(108,225,255,0.05);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .laser-ring.active { opacity: .9; animation: laserSpin 10s linear infinite; }
-
-    .spotlight {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0;
-      transition: opacity .3s ease;
-    }
-
-    .spotlight.on { opacity: 1; }
-
-    .footer-note {
-      position: absolute;
-      right: 18px;
-      bottom: 18px;
-      z-index: 6;
-      padding: 10px 14px;
-      border-radius: 16px;
-      background: rgba(8, 15, 29, 0.72);
-      border: 1px solid rgba(130,190,255,0.16);
-      color: var(--muted);
-      font-size: 12px;
-      backdrop-filter: blur(12px);
-      max-width: 420px;
-    }
-
-    .scanline {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: linear-gradient(180deg, transparent, rgba(108,225,255,0.06), transparent);
-      animation: scan 7s linear infinite;
-      z-index: 4;
-      mix-blend-mode: screen;
-      opacity: 0.6;
-    }
-
-    @keyframes masterFloat { 0%,100% { transform: translateY(0px);} 50% { transform: translateY(-8px);} }
-    @keyframes corePulse { 0%,100% { transform: scale(1); filter: saturate(1);} 50% { transform: scale(1.045); filter: saturate(1.2);} }
-    @keyframes spin { from { transform: rotateZ(0deg);} to { transform: rotateZ(360deg);} }
-    @keyframes spinReverse { from { transform: rotateZ(360deg);} to { transform: rotateZ(0deg);} }
-    @keyframes ping { 0% { transform: scale(0.8); opacity: .95;} 70% { transform: scale(2.8); opacity: 0;} 100% { opacity: 0;} }
-    @keyframes beamPulse { 0%,100% { filter: brightness(1); opacity: .8;} 50% { filter: brightness(1.25); opacity: 1;} }
-    @keyframes laserSpin { from { transform: rotateZ(0deg);} to { transform: rotateZ(360deg);} }
-    @keyframes scan { 0% { transform: translateY(-100%);} 100% { transform: translateY(100%);} }
-    @keyframes dataFlow { from { left:-18%; } to { left:100%; } }
 
     @media (max-width: 1100px) {
-      .wrap { padding: 18px; }
-      .system { transform: scale(.82); }
+      .dashboard-container { grid-template-columns: 1fr; }
     }
 
-    @media (max-width: 760px) {
-      .wrap { padding: 12px; }
-      .panel-head, .controls { padding-left: 14px; padding-right: 14px; }
-      .button-grid { grid-template-columns: 1fr 1fr; }
-      .scene-shell { min-height: 64vh; }
-      .system { transform: scale(.66); }
-      .hud-top { inset: 10px 10px auto 10px; }
-      .hud-chip { font-size: 11px; padding: 8px 10px; }
-      .hud-title { top: 62px; }
-      .hud-title p { font-size: 10px; }
-      .footer-note { left: 10px; right: 10px; bottom: 10px; font-size: 11px; max-width: none; }
-      .control-row { grid-template-columns: 1fr; }
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
     }
+    
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px;
+      width: 10px; height: 10px;
+      border-top: 2px solid var(--cyan);
+      border-left: 2px solid var(--cyan);
+    }
+    .panel::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 10px; height: 10px;
+      border-bottom: 2px solid var(--cyan);
+      border-right: 2px solid var(--cyan);
+    }
+
+    .panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--cyan);
+      background: rgba(56, 189, 248, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-content {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    /* AI Ops Dashboard */
+    .agent-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .agent-card {
+      border: 1px solid var(--border);
+      padding: 12px;
+      background: rgba(0,0,0,0.4);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .agent-card.active-collaboration {
+      border-color: var(--cyan);
+      box-shadow: inset 0 0 15px rgba(56,189,248,0.2);
+    }
+    .agent-info { color: var(--text-muted); }
+    .agent-name { color: var(--text-main); font-weight: bold; font-family: var(--font-ui); font-size: 13px; margin-bottom: 4px; }
+    .agent-status { color: var(--green); }
+    .agent-status.idle { color: var(--amber); }
+
+    .load-bars { display: flex; flex-direction: column; gap: 8px; }
+    .load-bar-group { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); display:flex; flex-direction:column; gap:4px; }
+    .bar-bg { width: 100%; height: 6px; background: rgba(255,255,255,0.1); }
+    .bar-fill { height: 100%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transition: width 0.5s ease;}
+    .bar-fill.high { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+
+    .task-flow {
+      border: 1px dotted var(--border);
+      padding: 16px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--cyan);
+      background: repeating-linear-gradient(45deg, rgba(56,189,248,0.02) 0px, rgba(56,189,248,0.02) 10px, transparent 10px, transparent 20px);
+    }
+
+    /* Modules */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .module-btn {
+      background: rgba(14, 23, 38, 0.4);
+      border: 1px solid var(--border);
+      padding: 20px 16px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      text-align: center;
+    }
+    .module-btn:hover, .module-btn.active {
+      background: rgba(56,189,248,0.1);
+      border-color: var(--cyan);
+      box-shadow: 0 0 20px rgba(56,189,248,0.2);
+    }
+    .module-details {
+      grid-column: 1 / -1;
+      border: 1px solid var(--cyan);
+      padding: 16px;
+      background: rgba(56,189,248,0.05);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      display: none;
+    }
+    .module-details.open { display: block; animation: slideDown 0.3s ease-out; }
+
+    @keyframes slideDown { from {opacity:0; transform:translateY(-10px);} to {opacity:1; transform:translateY(0);} }
+
+    /* Security */
+    .audit-log {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      height: 200px;
+      overflow-y: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .log-entry { opacity: 0.8; }
+    .log-time { color: var(--cyan); margin-right: 8px; }
+    
+    .sec-block {
+      border: 1px solid var(--border);
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+    }
+
+    .data-boundary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(0,0,0,0.5);
+    }
+
+    /* Toggles & Buttons */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+    }
+    .toggle-track {
+      width: 40px; height: 20px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid var(--border);
+      position: relative;
+      transition: 0.3s;
+    }
+    .toggle-thumb {
+      width: 16px; height: 16px;
+      background: var(--text-muted);
+      position: absolute;
+      top: 1px; left: 1px;
+      transition: 0.3s;
+    }
+    input:checked + .toggle-track {
+      background: rgba(56,189,248,0.2);
+      border-color: var(--cyan);
+    }
+    input:checked + .toggle-track .toggle-thumb {
+      background: var(--cyan);
+      transform: translateX(20px);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .use-case-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .uc-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: 0.2s;
+      text-align: center;
+    }
+    .uc-btn:hover { background: rgba(56,189,248,0.1); color: var(--text-main); border-color: var(--cyan); }
+    
+    .demo-footer {
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: var(--bg-panel);
+    }
+
+    .arch-view {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--border);
+      padding: 16px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--cyan);
+      background: rgba(0,0,0,0.3);
+    }
+    .arch-node {
+      border: 1px solid var(--border-accent);
+      padding: 8px 12px;
+      background: rgba(56,189,248,0.05);
+      text-align: center;
+    }
+    .arch-arr { opacity: 0.5; }
+
   </style>
-  <link rel="stylesheet" href="chatbot.css" />
+  <link rel="stylesheet" href="chatbot.css">
 </head>
 <body>
-  <div class="stars"></div>
-  <div class="wrap">
-    <aside class="sidebar">
-      <div class="panel-head">
-        <div class="eyebrow">GRACE-X • Sovereign AI Operating System</div>
-        <h1>3D Ecosystem Map</h1>
-        <p class="lead">A living ecosystem view of the GRACE-X architecture: multicore intelligence at the centre, governance wrapped around it, modules orbiting it, and real-world interfaces on the outside.</p>
+  <div class="crt-overlay"></div>
+  
+  <header>
+    <div class="brand">
+      <h1>GRACE-X AI Operations Platform</h1>
+      <p>Deploy, orchestrate, and scale AI agents across secure environments</p>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-val green"><span class="pulse"></span>ACTIVE</span>
+        <span class="stat-label">SYSTEM STATUS</span>
       </div>
-      <div class="controls">
-        <section class="control-card">
-          <h2 class="card-title">View Modes</h2>
-          <div class="button-grid" id="viewButtons">
-            <button class="active" data-view="full">Full System</button>
-            <button data-view="core">Core Only</button>
-            <button data-view="governance">Governance</button>
-            <button data-view="modules">Modules</button>
-            <button data-view="interfaces">Interfaces</button>
-            <button data-view="laser">Laser Mode</button>
-          </div>
-          <div class="control-row">
-            <button id="autoRotateBtn" class="toggle-btn on">Auto Rotate: On</button>
-            <button id="resetViewBtn">Reset View</button>
-          </div>
-        </section>
-
-        <section class="legend">
-          <h2 class="card-title">Legend</h2>
-          <div class="legend-row"><span class="dot core"></span><span>Triple Core — Eye, Analytics, Processing</span></div>
-          <div class="legend-row"><span class="dot gov"></span><span>Governance — Sentinel, Venus, TITAN</span></div>
-          <div class="legend-row"><span class="dot mod"></span><span>Modules — vertical AI capability lanes</span></div>
-          <div class="legend-row"><span class="dot iface"></span><span>Interfaces — devices, APIs, enterprise systems</span></div>
-          <div class="legend-row"><span class="dot up"></span><span>Green light — healthy / active lane</span></div>
-          <div class="legend-row"><span class="dot warn"></span><span>Red / amber — watch / restricted lane</span></div>
-        </section>
-
-        <section class="info-card">
-          <p class="info-label">Current Focus</p>
-          <h3 class="info-title" id="infoTitle">GRACE-X Ecosystem</h3>
-          <p class="info-desc" id="infoDesc">GRACE-X is not a single chatbot. It is a governed AI operating environment designed to run specialised intelligence lanes under one secure architecture.</p>
-          <div class="mini-stats">
-            <div class="stat"><strong id="stat1">3</strong><span>Core Engines</span></div>
-            <div class="stat"><strong id="stat2">3</strong><span>Gov Layers</span></div>
-            <div class="stat"><strong id="stat3">12</strong><span>Module / Interface Nodes</span></div>
-          </div>
-        </section>
-
-        <section class="status-bar">
-          <h2 class="card-title">System Readout</h2>
-          <div class="status-item"><span>Architecture Class</span><strong>Sovereign AI OS</strong></div>
-          <div class="status-item"><span>Core Behaviour</span><strong>Orchestrated / Governed</strong></div>
-          <div class="status-item"><span>Commercial Logic</span><strong>License Modules, protect Core</strong></div>
-          <div class="status-item"><span>Positioning</span><strong>Infrastructure, not just a tool</strong></div>
-        </section>
-
-        <section class="tour-card">
-          <h2 class="card-title">Pitch Tour</h2>
-          <p class="tour-copy">Runs an automatic guided fly-through: core, governance, modules, interfaces, then laser focus.</p>
-          <div class="control-row">
-            <button id="tourBtn" class="tour-btn">Start Tour</button>
-            <button id="pulseBtn" class="toggle-btn on">Data Flow: On</button>
-          </div>
-        </section>
+      <div class="stat-item">
+        <span class="stat-val cyan">12</span>
+        <span class="stat-label">ACTIVE AGENTS</span>
       </div>
-    </aside>
+      <div class="stat-item">
+        <span class="stat-val cyan" id="tasks-running">47</span>
+        <span class="stat-label">TASKS RUNNING</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-val">99.98%</span>
+        <span class="stat-label">UPTIME</span>
+      </div>
+    </div>
+  </header>
 
-    <main class="scene-shell" id="sceneShell">
-      <div class="hud-top">
-        <div class="hud-chip">Drag to rotate • Wheel to zoom</div>
-        <button id="hudHelpBtn" class="hud-chip hud-help-btn">💬 Ask GRACE-X for Help</button>
-        <div class="hud-chip">Interactive • Animated • Pitch Ready</div>
-      </div>
-      <div class="hud-title">
-        <h2>GRACE-X</h2>
-        <p>3D Ecosystem Command Map</p>
-      </div>
-      <div class="map-area">
-        <div class="system">
-          <div class="tilt" id="tilt">
-            <div class="ring-sheen"></div>
-            <div class="plane-ring ring-out"></div>
-            <div class="plane-ring ring-mod"></div>
-            <div class="plane-ring ring-gov"></div>
-            <div class="plane-ring ring-core"></div>
-            <div class="vertical-column"></div>
-            <div class="connector-layer" id="connectorLayer"></div>
-            <div class="beam" id="beam"></div>
-            <div class="laser-ring" id="laserRing"></div>
-            <div class="spotlight" id="spotlight"></div>
-            <div class="core-shell" id="coreNode">
-              <div class="core-orb"></div>
-              <div class="core-grid"></div>
-              <div class="core-grid two"></div>
-              <div class="core-label"><strong>GRACE-X</strong><span>Triple Core</span></div>
+  <div class="dashboard-container">
+    
+    <!-- LEFT PANEL: AI OPS -->
+    <div class="panel">
+      <div class="panel-header">AI Operations Dashboard</div>
+      <div class="panel-content">
+        
+        <div class="agent-grid">
+          <div class="agent-card" id="agent-1">
+            <div>
+              <div class="agent-name">GOV Assistant</div>
+              <div class="agent-info">Tasks: <span id="gov-tasks">14</span> | Load: <span id="gov-load">42</span>%</div>
             </div>
+            <div class="agent-status" id="gov-status">ACTIVE</div>
+          </div>
+          <div class="agent-card" id="agent-2">
+            <div>
+              <div class="agent-name">Data Analyst</div>
+              <div class="agent-info">Tasks: 8 | Load: 88%</div>
+            </div>
+            <div class="agent-status">ACTIVE</div>
+          </div>
+          <div class="agent-card" id="agent-3">
+            <div>
+              <div class="agent-name">Compliance Monitor</div>
+              <div class="agent-info">Tasks: 21 | Load: 15%</div>
+            </div>
+            <div class="agent-status">ACTIVE</div>
+          </div>
+          <div class="agent-card idle" id="agent-4">
+            <div>
+              <div class="agent-name">Automation Engine</div>
+              <div class="agent-info">Tasks: 4 | Load: 5%</div>
+            </div>
+            <div class="agent-status idle">IDLE</div>
           </div>
         </div>
+
+        <div class="task-flow" id="task-flow-vis">
+          INPUT &rarr; [ MULTI-AGENT ENGINE ] &rarr; OUTPUT
+        </div>
+
+        <div class="load-bars">
+          <div class="load-bar-group">
+            <div id="cpu-label">SYS CPU [48%]</div>
+            <div class="bar-bg"><div class="bar-fill" id="cpu-bar" style="width: 48%"></div></div>
+          </div>
+          <div class="load-bar-group">
+            <div id="mem-label">SYS MEM [62%]</div>
+            <div class="bar-bg"><div class="bar-fill" id="mem-bar" style="width: 62%"></div></div>
+          </div>
+          <div class="load-bar-group">
+            <div id="aiload-label">AI ORCHESTRATION LOAD [88%]</div>
+            <div class="bar-bg"><div class="bar-fill high" id="aiload-bar" style="width: 88%"></div></div>
+          </div>
+        </div>
+
       </div>
-      <div class="scanline"></div>
-      <div class="footer-note">Tip: tap nodes or view modes to shift focus. Laser Mode concentrates the whole stack onto one selected target.</div>
-    </main>
+    </div>
+
+    <!-- MIDDLE PANEL: MODULES -->
+    <div class="panel">
+      <div class="panel-header">
+        <span>Deployment Modules</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="multi-agent-toggle" style="display:none;">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          Multi-Agent Task Execution
+        </label>
+      </div>
+      <div class="panel-content">
+        <div class="modules-grid">
+          <div class="module-btn" onclick="toggleModule('Core')">Core</div>
+          <div class="module-btn" onclick="toggleModule('Uplift')">Uplift</div>
+          <div class="module-btn" onclick="toggleModule('Builder')">Builder</div>
+          <div class="module-btn" onclick="toggleModule('SiteOps')">SiteOps</div>
+          <div class="module-btn" onclick="toggleModule('TradeLink')">TradeLink</div>
+          <div class="module-btn" onclick="toggleModule('Creator')">Creator</div>
+          <div class="module-btn" onclick="toggleModule('StreetSafe')" style="grid-column: 2 / 3;">StreetSafe</div>
+
+          <div class="module-details" id="module-details">
+            <h3 id="mod-title" style="color:var(--text-main); font-family:var(--font-ui); margin-bottom:8px;">Core Layer</h3>
+            <p style="color:var(--cyan); margin-bottom:8px;">Capabilities: <span id="mod-cap" style="color:var(--text-muted)">Deep orchestration, semantic routing, task delegation.</span></p>
+            <p style="color:var(--cyan); margin-bottom:8px;">Active Tasks: <span id="mod-tasks" style="color:var(--text-muted)">24 running</span></p>
+            <p style="color:var(--cyan);">Integration Status: <span style="color:var(--green)">SECURE - GOV NET</span></p>
+          </div>
+        </div>
+
+        <div style="flex:1;"></div>
+        
+        <div class="panel-header" style="background:transparent; border-top:1px solid var(--border); margin:16px -16px 0; padding-top:16px; border-bottom:0;">
+          Simulated Workflows
+        </div>
+        <div class="use-case-buttons">
+          <button class="uc-btn" onclick="runSimulation('GOV.UK Assistant')">GOV.UK Assistant</button>
+          <button class="uc-btn" onclick="runSimulation('Ops Automation')">Internal Ops Automation</button>
+          <button class="uc-btn" onclick="runSimulation('Decision Support')">Decision Support</button>
+          <button class="uc-btn" onclick="runSimulation('Case Analysis')">Case Analysis</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: SECURITY -->
+    <div class="panel">
+      <div class="panel-header">Security & Audit Layer</div>
+      <div class="panel-content">
+        
+        <div class="sec-block">
+          <div style="color:var(--cyan); margin-bottom:12px;">ROLE-BASED ACCESS</div>
+          <div style="margin-bottom:4px;">Admin: <span style="color:var(--green); float:right;">[ SECURE ]</span></div>
+          <div style="margin-bottom:4px;">Operator: <span style="color:var(--green); float:right;">[ SECURE ]</span></div>
+          <div>Viewer: <span style="color:var(--amber); float:right;">[ RESTRICTED ]</span></div>
+          
+          <div class="data-boundary" style="margin-top:16px;">
+            <span>Internal Boundary</span>
+            <span style="color:var(--green)">[ GREEN ]</span>
+          </div>
+          <div class="data-boundary">
+            <span>External Sandbox</span>
+            <span style="color:var(--amber)">[ AMBER ]</span>
+          </div>
+        </div>
+
+        <div style="color:var(--cyan); font-size:11px; margin-top:8px;">LIVE AUDIT TRAIL</div>
+        <div class="sec-block" style="flex:1;">
+          <div class="audit-log" id="audit-log">
+            <!-- Logs injected by JS -->
+          </div>
+        </div>
+
+        <div class="arch-view">
+          <div class="arch-node">USER</div>
+          <div class="arch-arr">&rarr;</div>
+          <div class="arch-node">GRACE-X CORE</div>
+          <div class="arch-arr">&rarr;</div>
+          <div class="arch-node">AGENTS</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="demo-footer">
+    Demonstration Environment: This interface represents a prototype AI Operations layer designed for deployment within secure government and enterprise infrastructure.
+    <br><br>
+    GRACE-X is a modular AI orchestration platform enabling organisations to deploy, manage, and scale AI agents across secure infrastructure with full auditability and control.
   </div>
 
   <script>
-    const info = {
-      full: { title: 'GRACE-X Ecosystem', desc: 'A sovereign artificial intelligence operating system with enterprise and defense-grade deployment capability, supported by a proprietary multicore architecture and full ecosystem platform.', stats: ['3','3','12'] },
-      core: { title: 'Triple Core Engine', desc: 'The Eye orchestrates, Core 2 analyses, and Core 3 executes. This is the protected brain of the entire system.', stats: ['3','0','0'] },
-      governance: { title: 'Governance Layer', desc: 'Sentinel controls access, Venus manages external interaction boundaries, and TITAN handles deep internal threat and logic assessment.', stats: ['3','3','0'] },
-      modules: { title: 'Module Orbit', desc: 'Each module is a specialised capability lane plugged into the same governed brain.', stats: ['3','3','6'] },
-      interfaces: { title: 'Real-World Interfaces', desc: 'Where the system touches reality: phones, web, APIs, homes, enterprises, and public-sector stacks.', stats: ['3','3','6'] },
-      laser: { title: 'Laser Mode', desc: 'A conceptual focus state where the full stack concentrates on one target.', stats: ['3','3','Focused'] }
+    // Audit Log logic
+    const auditLog = document.getElementById('audit-log');
+    const logs = [
+      "User Auth_Gov confirmed via Token",
+      "Agent Data_Analyst processed request #8843",
+      "Network Handshake: Internal Boundary Secure",
+      "System Load balanced across Nodes",
+      "User Operator_2 requested Task #102",
+      "Task completion: 144ms",
+      "Agent Compliance_Monitor flagged payload 0x44",
+      "Threat Logic bypass denied",
+      "Memory reallocation triggered",
+      "Syncing with Central Command",
+      "Query executed spanning 4 Core layers",
+      "Validation hash passed"
+    ];
+
+    function addLog() {
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      const time = new Date().toISOString().split('T')[1].slice(0,8);
+      entry.innerHTML = `<span class="log-time">[${time}]</span> ${logs[Math.floor(Math.random() * logs.length)]}`;
+      auditLog.prepend(entry);
+      if (auditLog.children.length > 15) {
+        auditLog.removeChild(auditLog.lastChild);
+      }
+    }
+    setInterval(addLog, 1200);
+    for(let i=0; i<6; i++) addLog();
+
+    // Module clicking
+    const modDetails = document.getElementById('module-details');
+    const modTitle = document.getElementById('mod-title');
+    const modCap = document.getElementById('mod-cap');
+    const descriptions = {
+      'Core': 'Deep orchestration, semantic routing, task delegation.',
+      'Uplift': 'Wellness, mentoring, human-centered assistance.',
+      'Builder': 'Construction workflows, scheduling, ops support.',
+      'SiteOps': 'Field coordination, live operational intelligence.',
+      'TradeLink': 'Compliance, legislation awareness, routing.',
+      'Creator': 'Media production, idea generation, execution.',
+      'StreetSafe': 'Active security, patrol logic, monitoring.'
     };
 
-    const governanceNodes = [
-      { id: 'sentinel', type: 'governance', name: 'Sentinel', role: 'Access control / gatekeeper', angle: -15, radius: 190, z: 32, status: 'up' },
-      { id: 'venus', type: 'governance', name: 'Venus', role: 'Sandbox / external boundary', angle: 115, radius: 190, z: 20, status: 'up' },
-      { id: 'titan', type: 'governance', name: 'TITAN', role: 'Deep analysis / threat logic', angle: 235, radius: 190, z: 26, status: 'warn' }
-    ];
-
-    const moduleNodes = [
-      { id: 'forge', type: 'module', name: 'Forge', role: 'Development / Creation', angle: 0, radius: 300, z: 40, status: 'up' },
-      { id: 'sport', type: 'module', name: 'Sport', role: 'Sports Analytics', angle: 22.5, radius: 300, z: 35, status: 'up' },
-      { id: 'osint', type: 'module', name: 'OSINT', role: 'Intelligence / Recon', angle: 45, radius: 300, z: 45, status: 'up' },
-      { id: 'accounting', type: 'module', name: 'Accounting', role: 'Finance / Ledger', angle: 67.5, radius: 300, z: 30, status: 'up' },
-      { id: 'builder', type: 'module', name: 'Builder', role: 'Trades / Construction', angle: 90, radius: 300, z: 48, status: 'up' },
-      { id: 'tradelink', type: 'module', name: 'TradeLink', role: 'Compliance / Routing', angle: 112.5, radius: 300, z: 34, status: 'alert' },
-      { id: 'guardian', type: 'module', name: 'Guardian', role: 'Security / Patrol', angle: 135, radius: 300, z: 42, status: 'up' },
-      { id: 'siteops', type: 'module', name: 'SiteOps', role: 'Field Management', angle: 157.5, radius: 300, z: 36, status: 'up' },
-      { id: 'family', type: 'module', name: 'Family', role: 'Home / Coordination', angle: 180, radius: 300, z: 30, status: 'warn' },
-      { id: 'uplift', type: 'module', name: 'Uplift', role: 'Wellness / Mentoring', angle: 202.5, radius: 300, z: 44, status: 'up' },
-      { id: 'fit', type: 'module', name: 'Fit', role: 'Fitness / Health', angle: 225, radius: 300, z: 38, status: 'up' },
-      { id: 'yoga', type: 'module', name: 'Yoga', role: 'Mindfulness / Flow', angle: 247.5, radius: 300, z: 40, status: 'up' },
-      { id: 'chef', type: 'module', name: 'Chef', role: 'Culinary / Nutrition', angle: 270, radius: 300, z: 32, status: 'up' },
-      { id: 'beauty', type: 'module', name: 'Beauty', role: 'Aesthetics / Style', angle: 292.5, radius: 300, z: 46, status: 'up' },
-      { id: 'creator', type: 'module', name: 'Creator', role: 'Creative / Media', angle: 315, radius: 300, z: 42, status: 'up' },
-      { id: 'gamer', type: 'module', name: 'Gamer', role: 'Gaming / Interaction', angle: 337.5, radius: 300, z: 36, status: 'up' }
-    ];
-
-    const outerNodes = [
-      { id: 'mobile', type: 'interface', name: 'Mobile', role: 'Phone / app layer', angle: -6, radius: 390, z: 20, status: 'up' },
-      { id: 'web', type: 'interface', name: 'Web Stack', role: 'Sites / dashboards / portals', angle: 55, radius: 390, z: 14, status: 'up' },
-      { id: 'api', type: 'interface', name: 'APIs', role: 'Data feeds / integrations', angle: 118, radius: 390, z: 12, status: 'warn' },
-      { id: 'home', type: 'interface', name: 'Device Layer', role: 'Home / on-site hardware', angle: 181, radius: 390, z: 14, status: 'up' },
-      { id: 'enterprise', type: 'interface', name: 'Enterprise', role: 'Ops / compliance / teams', angle: 240, radius: 390, z: 18, status: 'up' },
-      { id: 'public', type: 'interface', name: 'Public Sector', role: 'Police / defence / agencies', angle: 306, radius: 390, z: 24, status: 'warn' }
-    ];
-
-    const nodeDetails = {
-      core: { title: 'Triple Core', desc: 'The core brain: Eye for orchestration, Core 2 for analysis, Core 3 for execution.' },
-      sentinel: { title: 'Sentinel', desc: 'Controls what enters, what routes, what is allowed, and where traffic is permitted to move.' },
-      venus: { title: 'Venus', desc: 'Acts as the external interaction boundary so outside-facing workflows stay sandboxed.' },
-      titan: { title: 'TITAN', desc: 'Internal deep-analysis nucleus for threat logic, system integrity checks, and hard-edged decision support.' },
-      forge: { title: 'Forge', desc: 'Core development environment and creation engine for the ecosystem.' },
-      sport: { title: 'Sport', desc: 'Advanced analytics engine for physical performance, team data, and sports metrics.' },
-      osint: { title: 'OSINT', desc: 'Open-source intelligence layer for gathering, parsing, and analysing external data.' },
-      accounting: { title: 'Accounting', desc: 'Financial ledger, reporting, processing, and commercial analytics.' },
-      builder: { title: 'Builder', desc: 'Construction and trades workflow intelligence: quoting, scheduling, ops support, and practical automation.' },
-      siteops: { title: 'SiteOps', desc: 'Field coordination, task flow, operational oversight, and live worksite intelligence support.' },
-      uplift: { title: 'Uplift', desc: 'Support and welfare lane focused on mentoring, resilience, check-ins, and human-centred assistance.' },
-      family: { title: 'Family / HomeSafe', desc: 'Consumer environment lane: assistant capability, family protection logic, and smart-environment awareness.' },
-      creator: { title: 'Creator', desc: 'Media, visual production, idea generation, content flow, and creator-facing execution tools.' },
-      tradelink: { title: 'TradeLink', desc: 'Trade/compliance infrastructure lane linking workstreams, tasks, legislation awareness, and process routing.' },
-      guardian: { title: 'Guardian', desc: 'Active security, patrol logic, and environmental safety monitoring.' },
-      fit: { title: 'Fit', desc: 'Physical health, training programs, and physiologic monitoring.' },
-      yoga: { title: 'Yoga', desc: 'Mindfulness, flow-states, and mental centering capability.' },
-      chef: { title: 'Chef', desc: 'Culinary intelligence, nutrition planning, and recipe formulation.' },
-      beauty: { title: 'Beauty', desc: 'Aesthetics, style alignment, and cosmetic intelligence.' },
-      gamer: { title: 'Gamer', desc: 'Interactive entertainment integration, gaming strategy, and environment interaction.' },
-      mobile: { title: 'Mobile Layer', desc: 'Where GRACE-X becomes a user-facing phone experience: alerts, voice, dashboards, and daily interactions.' },
-      web: { title: 'Web Stack', desc: 'Sites, portals, dashboards, landing pages, client systems, and service surfaces built on top of the core stack.' },
-      api: { title: 'API Integrations', desc: 'External feeds, automation links, partner systems, and structured data ingress/egress.' },
-      home: { title: 'Device Layer', desc: 'In-home or on-site hardware endpoints: smart displays, mics, cameras, control surfaces, and local systems.' },
-      enterprise: { title: 'Enterprise Layer', desc: 'Operational, business, and team-facing deployment context for governed multi-agent workflows.' },
-      public: { title: 'Public Sector Layer', desc: 'Potential deployment frame for police, defence, or agency-grade use where audit, control, and explainability matter.' }
-    };
-
-    const tilt = document.getElementById('tilt');
-    const sceneShell = document.getElementById('sceneShell');
-    const connectorLayer = document.getElementById('connectorLayer');
-    const infoTitle = document.getElementById('infoTitle');
-    const infoDesc = document.getElementById('infoDesc');
-    const stat1 = document.getElementById('stat1');
-    const stat2 = document.getElementById('stat2');
-    const stat3 = document.getElementById('stat3');
-    const beam = document.getElementById('beam');
-    const laserRing = document.getElementById('laserRing');
-    const spotlight = document.getElementById('spotlight');
-    const buttons = [...document.querySelectorAll('#viewButtons button')];
-    const autoRotateBtn = document.getElementById('autoRotateBtn');
-    const resetViewBtn = document.getElementById('resetViewBtn');
-    const tourBtn = document.getElementById('tourBtn');
-    const pulseBtn = document.getElementById('pulseBtn');
-
-    let currentView = 'full';
-    let activeNodeId = 'core';
-    let autoRotate = true;
-    let pulseFlow = true;
-    let rotX = 14, rotZ = 0, rotY = 0, zoom = 1;
-    let targetRotX = 14, targetRotZ = 0, targetRotY = 0, targetZoom = 1;
-    let panX = 0, panY = 0;
-    let targetPanX = 0, targetPanY = 0;
-    let isPanning = false;
-    let isDragging = false, lastX = 0, lastY = 0;
-    let tourTimer = null;
-    let touring = false;
-
-    function polar(radius, angleDeg) {
-      const a = (angleDeg * Math.PI) / 180;
-      return { x: Math.cos(a) * radius, y: Math.sin(a) * radius };
-    }
-
-    function makeNode(node) {
-      const wrap = document.createElement('div');
-      wrap.className = `${node.type === 'governance' ? 'governance-node' : node.type === 'module' ? 'module-node' : 'outer-node'}`;
-      wrap.dataset.id = node.id;
-      wrap.dataset.type = node.type;
-      const p = polar(node.radius, node.angle);
-      wrap.style.transform = `translate(-50%, -50%) translate3d(${p.x}px, ${p.y}px, ${node.z}px)`;
+    function toggleModule(name) {
+      document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      modTitle.textContent = name + ' Layer';
+      modCap.textContent = descriptions[name] || 'Active processing layer.';
+      document.getElementById('mod-tasks').textContent = Math.floor(Math.random()*50 + 5) + ' running';
+      modDetails.classList.add('open');
       
-      if (node.type === 'module') {
-        wrap.innerHTML = `
-          <div class="brain-icon status-${node.status || 'up'}">
-            <svg viewBox="0 0 24 24" width="45" height="45" stroke="currentColor" fill="rgba(108,225,255,0.22)" stroke-width="1.2">
-              <path d="M12 4.5C10.5 3 8 3 8 5C8 5.5 8.2 6 8.5 6.5C6.5 7 5 8.5 5 10.5C5 12 6 13.2 7.2 13.8C7 14.2 6.8 14.8 6.8 15.5C6.8 17.5 8.5 19 10.5 19C11 19 11.5 18.8 12 18.5C12.5 18.8 13 19 13.5 19C15.5 19 17.2 17.5 17.2 15.5C17.2 14.8 17 14.2 16.8 13.8C18 13.2 19 12 19 10.5C19 8.5 17.5 7 15.5 6.5C15.8 6 16 5.5 16 5C16 3 13.5 3 12 4.5Z" />
-              <path d="M12 4.5V18.5" opacity="0.5"/>
-            </svg>
-          </div>
-          <div class="node-card transparent-card status-${node.status || 'up'}">
-            <div class="node-name">${node.name}</div>
-            <div class="node-role">${node.role}</div>
-          </div>
-        `;
-      } else {
-        wrap.innerHTML = `
-          <div class="node-card status-${node.status || 'up'}">
-            <div class="node-top">
-              <div class="node-kicker">${node.type}</div>
-              <div class="node-status"></div>
-            </div>
-            <div class="node-name">${node.name}</div>
-            <div class="node-role">${node.role}</div>
-          </div>
-          <div class="node-pulse"></div>`;
-      }
-      
-      wrap.addEventListener('click', () => selectNode(node.id));
-      tilt.appendChild(wrap);
-      return wrap;
+      // small animation reset
+      modDetails.style.animation = 'none';
+      modDetails.offsetHeight; // trigger reflow
+      modDetails.style.animation = null; 
     }
 
-    const nodeElements = {};
-    [...governanceNodes, ...moduleNodes, ...outerNodes].forEach(n => { nodeElements[n.id] = makeNode(n); });
-
-    function connectorTo(node, variant = 'default') {
-      const p = polar(node.radius, node.angle);
-      const length = Math.hypot(p.x, p.y);
-      const deg = Math.atan2(p.y, p.x) * 180 / Math.PI;
-      const c = document.createElement('div');
-      c.className = `connector ${variant === 'violet' ? 'violet' : variant === 'silver' ? 'silver' : ''}`;
-      c.style.width = `${length}px`;
-      c.style.transform = `translate(0, -50%) rotate(${deg}deg)`;
-      connectorLayer.appendChild(c);
-      return c;
-    }
-
-    const connectors = [
-      ...governanceNodes.map(n => connectorTo(n, 'violet')),
-      ...moduleNodes.map(n => connectorTo(n)),
-      ...outerNodes.map(n => connectorTo(n, 'silver'))
-    ];
-
-    function setInfo(title, desc, stats) {
-      infoTitle.textContent = title;
-      infoDesc.textContent = desc;
-      stat1.textContent = stats[0];
-      stat2.textContent = stats[1];
-      stat3.textContent = stats[2];
-    }
-
-    function moveSpotlightTo(id) {
-      const target = nodeElements[id];
-      if (!target) {
-        spotlight.classList.remove('on');
-        return;
-      }
-      const match = /translate3d\(([-\d.]+)px, ([-\d.]+)px, ([-\d.]+)px\)/.exec(target.style.transform);
-      if (!match) return;
-      const x = parseFloat(match[1]);
-      const y = parseFloat(match[2]);
-      spotlight.style.background = `radial-gradient(circle at calc(50% + ${x}px) calc(50% + ${y}px), rgba(82,255,156,.16), transparent 12%), radial-gradient(circle at calc(50% + ${x}px) calc(50% + ${y}px), rgba(108,225,255,.10), transparent 26%)`;
-      spotlight.classList.add('on');
-    }
-
-    function selectNode(id) {
-      activeNodeId = id;
-      document.querySelectorAll('.node-card').forEach(el => el.classList.remove('active'));
-      const wrap = nodeElements[id];
-      if (wrap) wrap.querySelector('.node-card').classList.add('active');
-      const detail = nodeDetails[id] || nodeDetails.core;
-      setInfo(detail.title, detail.desc, ['3','3','Live']);
-      moveSpotlightTo(id);
-      if (currentView === 'laser') activateBeamOn(id);
-    }
-
-    function activateBeamOn(id) {
-      beam.classList.add('active');
-      laserRing.classList.add('active');
-      const target = nodeElements[id];
-      if (!target) return;
-      const match = /translate3d\(([-\d.]+)px, ([-\d.]+)px, ([-\d.]+)px\)/.exec(target.style.transform);
-      if (match) {
-        const x = parseFloat(match[1]);
-        const y = parseFloat(match[2]);
-        laserRing.style.transform = `translate(${x - 110}px, ${y - 110}px)`;
-      }
-    }
-
-    function clearBeam() {
-      beam.classList.remove('active');
-      laserRing.classList.remove('active');
-      laserRing.style.transform = '';
-    }
-
-    function applyView(view) {
-      currentView = view;
-      buttons.forEach(b => b.classList.toggle('active', b.dataset.view === view));
-      const data = info[view] || info.full;
-      setInfo(data.title, data.desc, data.stats);
-      const showCore = ['full','core','laser'].includes(view);
-      const showGov = ['full','governance','laser'].includes(view);
-      const showMod = ['full','modules','laser'].includes(view);
-      const showOut = ['full','interfaces','laser'].includes(view);
-      document.getElementById('coreNode').style.opacity = showCore ? '1' : '0.12';
-      document.querySelectorAll('.governance-node').forEach(el => el.style.opacity = showGov ? '1' : '0.08');
-      document.querySelectorAll('.module-node').forEach(el => el.style.opacity = showMod ? '1' : '0.08');
-      document.querySelectorAll('.outer-node').forEach(el => el.style.opacity = showOut ? '1' : '0.08');
-      connectors.forEach((c, i) => {
-        const isGov = i < governanceNodes.length;
-        const isMod = i >= governanceNodes.length && i < governanceNodes.length + moduleNodes.length;
-        const isOut = i >= governanceNodes.length + moduleNodes.length;
-        const visible = (isGov && showGov) || (isMod && showMod) || (isOut && showOut);
-        c.style.opacity = visible ? '0.7' : '0.06';
+    // Multi-Agent Mode
+    const toggle = document.getElementById('multi-agent-toggle');
+    const agents = document.querySelectorAll('.agent-card');
+    toggle.addEventListener('change', (e) => {
+      const active = e.target.checked;
+      agents.forEach(a => {
+        if (active) a.classList.add('active-collaboration');
+        else a.classList.remove('active-collaboration');
       });
-      if (view === 'laser') activateBeamOn(activeNodeId); else clearBeam();
-      moveSpotlightTo(activeNodeId);
-    }
+      const tf = document.getElementById('task-flow-vis');
+      if(active) {
+        tf.innerHTML = 'INPUT &rarr; <span style="color:var(--text-main);font-weight:bold;">[ AGENTS COLLABORATING ON TASK ]</span> &rarr; OUTPUT';
+        tf.style.background = 'repeating-linear-gradient(45deg, rgba(34,197,94,0.05) 0px, rgba(34,197,94,0.05) 10px, transparent 10px, transparent 20px)';
+        tf.style.color = 'var(--green)';
+      } else {
+        tf.innerHTML = 'INPUT &rarr; [ MULTI-AGENT ENGINE ] &rarr; OUTPUT';
+        tf.style.background = 'repeating-linear-gradient(45deg, rgba(56,189,248,0.02) 0px, rgba(56,189,248,0.02) 10px, transparent 10px, transparent 20px)';
+        tf.style.color = 'var(--cyan)';
+      }
+    });
 
-    function startTour() {
-      touring = true;
-      tourBtn.textContent = 'Stop Tour';
-      tourBtn.classList.add('on');
-      const steps = [
-        () => { applyView('core'); selectNode('core'); targetRotX = 60; targetRotY += 25; targetZoom = 1.08; },
-        () => { applyView('governance'); selectNode('sentinel'); targetRotX = 68; targetRotY += 40; targetZoom = 1.02; },
-        () => { selectNode('venus'); targetRotY += 55; },
-        () => { selectNode('titan'); targetRotY += 55; },
-        () => { applyView('modules'); selectNode('builder'); targetRotX = 72; targetRotY += 65; targetZoom = 0.98; },
-        () => { selectNode('uplift'); targetRotY += 70; },
-        () => { selectNode('creator'); targetRotY += 70; },
-        () => { applyView('interfaces'); selectNode('mobile'); targetRotX = 62; targetRotY += 75; targetZoom = 0.94; },
-        () => { selectNode('enterprise'); targetRotY += 90; },
-        () => { applyView('laser'); selectNode('public'); targetRotX = 66; targetZoom = 1.06; }
-      ];
-      let i = 0;
-      steps[i++]();
-      tourTimer = setInterval(() => {
-        if (i >= steps.length) {
-          stopTour();
-          applyView('full');
-          selectNode('core');
-          return;
+    // Simulated Workflows
+    function runSimulation(type) {
+      const tf = document.getElementById('task-flow-vis');
+      const oldHtml = tf.innerHTML;
+      tf.innerHTML = `<span style="color:var(--amber)">PROCESSING [${type}]...</span> &rarr; [ AGENTS RUNNING ] &rarr; <span class="pulse" style="background:var(--amber);box-shadow:none;"></span>`;
+      
+      const eventLog = `User Operator_2 requested workflow: ${type}`;
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      const time = new Date().toISOString().split('T')[1].slice(0,8);
+      entry.innerHTML = `<span class="log-time">[${time}]</span> <span style="color:var(--amber)">${eventLog}</span>`;
+      auditLog.prepend(entry);
+      
+      // Update Agent 1 load
+      if (type === 'GOV.UK Assistant') {
+        document.getElementById('gov-status').innerText = 'BUSY';
+        document.getElementById('gov-status').style.color = 'var(--amber)';
+        document.getElementById('gov-load').innerText = '92';
+        document.getElementById('agent-1').classList.add('active-collaboration');
+      }
+
+      setTimeout(() => {
+        tf.innerHTML = `INPUT [${type}] &rarr; [ MULTI-AGENT ENGINE ] &rarr; <span style="color:var(--green)">OUTPUT SECURE</span>`;
+        if (type === 'GOV.UK Assistant') {
+          setTimeout(() => {
+            document.getElementById('gov-status').innerText = 'ACTIVE';
+            document.getElementById('gov-status').style.color = 'var(--green)';
+            document.getElementById('gov-load').innerText = Math.floor(Math.random() * 30 + 30);
+            if (!document.getElementById('multi-agent-toggle').checked) {
+              document.getElementById('agent-1').classList.remove('active-collaboration');
+            }
+          }, 1000);
         }
-        steps[i++]();
-      }, 2200);
+      }, 1400);
+      
+      let tasks = parseInt(document.getElementById('tasks-running').innerText);
+      document.getElementById('tasks-running').innerText = tasks + 1;
     }
 
-    function stopTour() {
-      touring = false;
-      tourBtn.textContent = 'Start Tour';
-      tourBtn.classList.remove('on');
-      if (tourTimer) {
-        clearInterval(tourTimer);
-        tourTimer = null;
-      }
-    }
+    // Dynamic load bars
+    setInterval(() => {
+      document.getElementById('cpu-bar').style.width = Math.floor(Math.random() * 20 + 40) + '%';
+      document.getElementById('cpu-label').innerText = `SYS CPU [${document.getElementById('cpu-bar').style.width}]`;
+      
+      document.getElementById('mem-bar').style.width = Math.floor(Math.random() * 10 + 60) + '%';
+      document.getElementById('mem-label').innerText = `SYS MEM [${document.getElementById('mem-bar').style.width}]`;
+      
+      document.getElementById('aiload-bar').style.width = Math.floor(Math.random() * 25 + 70) + '%';
+      document.getElementById('aiload-label').innerText = `AI ORCHESTRATION LOAD [${document.getElementById('aiload-bar').style.width}]`;
+    }, 2500);
 
-    buttons.forEach(btn => btn.addEventListener('click', () => applyView(btn.dataset.view)));
-
-    autoRotateBtn.addEventListener('click', () => {
-      autoRotate = !autoRotate;
-      autoRotateBtn.textContent = `Auto Rotate: ${autoRotate ? 'On' : 'Off'}`;
-      autoRotateBtn.classList.toggle('on', autoRotate);
-    });
-
-    pulseBtn.addEventListener('click', () => {
-      pulseFlow = !pulseFlow;
-      pulseBtn.textContent = `Data Flow: ${pulseFlow ? 'On' : 'Off'}`;
-      pulseBtn.classList.toggle('on', pulseFlow);
-      const styleEl = document.getElementById('flowStateStyle') || (() => {
-        const s = document.createElement('style');
-        s.id = 'flowStateStyle';
-        document.head.appendChild(s);
-        return s;
-      })();
-      styleEl.textContent = `.connector::after{animation-play-state:${pulseFlow ? 'running' : 'paused'};}`;
-    });
-
-    resetViewBtn.addEventListener('click', () => {
-      targetRotX = 14;
-      targetRotZ = 0;
-      targetRotY = 0;
-      targetZoom = 1;
-      targetPanX = 0;
-      targetPanY = 0;
-    });
-
-    tourBtn.addEventListener('click', () => {
-      if (touring) stopTour(); else startTour();
-    });
-
-    sceneShell.addEventListener('pointerdown', (e) => {
-      isDragging = true;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      if (e.target.closest('#coreNode')) {
-        isPanning = true;
-        isDragging = false;
-      }
-      sceneShell.classList.add('dragging');
-      sceneShell.setPointerCapture(e.pointerId);
-    });
-
-    sceneShell.addEventListener('pointermove', (e) => {
-      if (isPanning) {
-        const dx = e.clientX - lastX;
-        const dy = e.clientY - lastY;
-        lastX = e.clientX;
-        lastY = e.clientY;
-        targetPanX += dx;
-        targetPanY += dy;
-        return;
-      }
-      if (!isDragging) return;
-      const dx = e.clientX - lastX;
-      const dy = e.clientY - lastY;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      targetRotY += dx * 0.28;
-      targetRotX = Math.max(-10, Math.min(80, targetRotX - dy * 0.14));
-      targetRotZ = Math.max(-20, Math.min(20, targetRotZ + dx * 0.03));
-    });
-
-    const stopDrag = () => {
-      isDragging = false;
-      isPanning = false;
-      sceneShell.classList.remove('dragging');
-    };
-
-    sceneShell.addEventListener('pointerup', stopDrag);
-    sceneShell.addEventListener('pointercancel', stopDrag);
-    sceneShell.addEventListener('pointerleave', stopDrag);
-
-    sceneShell.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      targetZoom += e.deltaY > 0 ? -0.06 : 0.06;
-      targetZoom = Math.max(0.72, Math.min(1.28, targetZoom));
-    }, { passive: false });
-
-    function animate() {
-      if (autoRotate && !isDragging && !touring && !isPanning) targetRotY += 0.08;
-      rotX += (targetRotX - rotX) * 0.08;
-      rotZ += (targetRotZ - rotZ) * 0.08;
-      rotY += (targetRotY - rotY) * 0.08;
-      zoom += (targetZoom - zoom) * 0.08;
-      panX += (targetPanX - panX) * 0.15;
-      panY += (targetPanY - panY) * 0.15;
-      tilt.style.transform = `translate(${panX}px, ${panY}px) rotateX(${rotX}deg) rotateZ(${rotZ}deg) rotateY(${rotY}deg) scale(${zoom})`;
-      requestAnimationFrame(animate);
-    }
-
-    selectNode('core');
-    applyView('full');
-    animate();
   </script>
   <script src="chatbot.js"></script>
 </body>

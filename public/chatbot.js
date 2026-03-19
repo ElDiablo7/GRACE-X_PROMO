@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
         <div id="chat-window">
           <div class="chat-header">
             <div class="chat-title-group">
-              <div class="chat-title">GRACE-X AI</div>
-              <div class="chat-subtitle">Sales & Deployment Expert</div>
+              <div class="chat-title">GRACE-X ORCHESTRATOR</div>
+              <div class="chat-subtitle">Terminal Active</div>
             </div>
             <button class="chat-close-btn" id="chat-close-btn">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="msg ai">
-              Welcome. I am GRACE-X, a modular AI operating system. How can I assist you with enterprise and defence-grade deployments today?
+              Terminal initialized. I am the GRACE-X Orchestrator. How can I assist you with deployment or operations?
             </div>
           </div>
           <div class="chat-prompts-dropdown">
