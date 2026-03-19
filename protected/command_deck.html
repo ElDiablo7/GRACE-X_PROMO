@@ -7,10 +7,10 @@
 <style>
   :root{
     --bg:#03050a;
-    --panel:rgba(8,12,22,.76);
-    --panel2:rgba(14,20,34,.92);
-    --line:rgba(255,255,255,.08);
-    --line-strong:rgba(255,255,255,.18);
+    --panel:rgba(12,18,34,.65);
+    --panel2:rgba(18,24,42,.8);
+    --line:rgba(255,255,255,.06);
+    --line-strong:rgba(255,255,255,.12);
     --text:#eef3ff;
     --muted:#9aabca;
     --gold:#f4d03f;
@@ -51,18 +51,30 @@
   .floorLabel{position:absolute;padding:8px 12px;border-radius:999px;background:rgba(8,12,20,.62);border:1px solid rgba(255,255,255,.08);font-size:.72rem;font-weight:800;letter-spacing:.08em;color:var(--muted);white-space:nowrap;transform:translateZ(-165px)}
   .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:.75;box-shadow:0 0 10px #fff}
 
-  .hudCard{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:var(--panel);border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.36)}
-  .topbar{position:fixed;left:14px;right:14px;top:14px;z-index:30;min-height:78px;border-radius:18px;padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:16px}
-  .brand h1{font-size:clamp(1rem,2vw,1.55rem);letter-spacing:.18em;font-weight:900;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-  .brand .sub{margin-top:6px;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted)}
-  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.pill{min-width:112px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
-  .pill .k{font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.pill .v{margin-top:4px;font-weight:800}
+  .hudCard{backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:var(--panel);border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.45); transition: height 0.3s ease, min-height 0.3s ease, width 0.3s ease, transform 0.4s ease, opacity 0.4s ease;}
+  .hudCard.collapsed { height: 64px !important; min-height: 64px !important; overflow: hidden !important; }
+  .hudCard.collapsed > div:not(.sectionTitle) { display: none !important; opacity: 0; }
+  .panelCollapseBtn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); color: var(--text); border-radius: 8px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; font-size: 1rem; font-weight: bold; line-height: 1; margin-left: auto; }
+  .panelCollapseBtn:hover { background: rgba(255,255,255,0.18); }
+  
+  .topbar{position:fixed;left:24px;right:24px;top:24px;z-index:30;min-height:80px;border-radius:24px;padding:16px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px; flex-wrap: wrap;}
+  .brand{flex: 1; min-width: 300px;}
+  .brand h1{font-size:clamp(1rem,2vw,1.65rem);letter-spacing:.22em;font-weight:900;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .brand .sub{margin-top:8px;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+  .stats{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end; flex: 2; min-width: 400px;}.pill{min-width:112px;padding:10px 14px;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
+  .pill .k{font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}.pill .v{margin-top:4px;font-weight:800;font-size:.85rem}
 
-  .leftRail{position:fixed;left:14px;top:104px;bottom:14px;width:318px;z-index:30;border-radius:20px;padding:14px;overflow:auto}
-  .rightRail{position:fixed;right:14px;top:104px;bottom:116px;width:356px;z-index:30;border-radius:20px;padding:14px;overflow:auto}
-  .bottomDock{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:min(1180px,calc(100vw - 28px));z-index:30;border-radius:18px;padding:10px}
-  .miniTopRight{position:fixed;right:14px;bottom:14px;width:356px;z-index:30;border-radius:18px;padding:12px}
-  .centerPlate{position:fixed;left:50%;top:118px;transform:translateX(-50%);z-index:31;width:410px;pointer-events:none}
+  .leftRail{position:fixed;left:24px;top:128px;bottom:24px;width:clamp(280px, 22vw, 340px);z-index:30;border-radius:24px;padding:16px 20px;overflow-y:auto;overflow-x:hidden;}
+  .rightRail{position:fixed;right:24px;top:128px;bottom:130px;width:clamp(300px, 25vw, 370px);z-index:30;border-radius:24px;padding:16px 20px;overflow-y:auto;overflow-x:hidden;}
+  .bottomDock{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;width:max-content;max-width:calc(100vw - 48px);z-index:30;border-radius:24px;padding:10px 14px;background:var(--panel2);backdrop-filter:blur(30px)}
+  .miniTopRight{position:fixed;right:24px;bottom:24px;width:clamp(300px, 25vw, 370px);z-index:30;border-radius:24px;padding:14px 16px}
+  .centerPlate{position:fixed;left:50%;top:132px;transform:translateX(-50%);z-index:31;width:clamp(260px, 35vw, 440px);pointer-events:none}
+  .topbar, .leftRail, .rightRail, .miniTopRight, .centerPlate { transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease, height 0.3s ease; }
+  body.ui-hidden .topbar { transform: translateY(-150%); opacity: 0; pointer-events: none; }
+  body.ui-hidden .leftRail { transform: translateX(-150%); opacity: 0; pointer-events: none; }
+  body.ui-hidden .rightRail { transform: translateX(150%); opacity: 0; pointer-events: none; }
+  body.ui-hidden .miniTopRight { transform: translateX(150%); opacity: 0; pointer-events: none; }
+  body.ui-hidden .centerPlate { opacity: 0; pointer-events: none; }
   .plate{border-radius:22px;padding:14px 18px;background:linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 46px rgba(0,0,0,.38);backdrop-filter:blur(12px)}
   .plate .crest{display:flex;align-items:center;gap:14px}
   .plate .logo{width:54px;height:54px;border-radius:16px;background:radial-gradient(circle at 35% 30%, var(--chrome3), var(--chrome1) 38%, var(--chrome2) 78%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 10px 24px rgba(0,0,0,.35);position:relative}
@@ -142,7 +154,7 @@
   </div>
 
   <aside class="leftRail hudCard">
-    <div class="sectionTitle"><h3>Selected Node</h3><span class="badge" id="nodeTypeBadge">System</span></div>
+    <div class="sectionTitle"><h3>Selected Node</h3><span class="badge" id="nodeTypeBadge">System</span><button class="panelCollapseBtn" onclick="this.parentElement.parentElement.classList.toggle('collapsed'); this.textContent = this.parentElement.parentElement.classList.contains('collapsed') ? '+' : '-';">-</button></div>
     <div class="selected">
       <div class="name gold" id="selectedName">THE EYE</div>
       <div class="role" id="selectedRole">Master orchestrator and routing intelligence.</div>
@@ -157,7 +169,7 @@
         <div class="meterRow"><div class="mLabel">Load</div><div class="bar"><div class="fill barBlue" id="meterLoad"></div></div><div class="pct" id="loadPct">41%</div></div>
         <div class="meterRow"><div class="mLabel">Health</div><div class="bar"><div class="fill barPurple" id="meterHealth"></div></div><div class="pct" id="healthPct">100%</div></div>
       </div>
-      <div class="footerNote" id="selectedDesc">Click any node in the map or use the jump list. Laser mode routes visible focus beams into the selected target.</div>
+      <div class="footerNote" id="selectedDesc">Click any node in the map or use the jump list. Laser mode routes visible focus beams into the selected target. (Drag with middle-click/shift to pan)</div>
     </div>
 
     <div class="sectionTitle" style="margin-top:16px"><h3>View Modes</h3><span class="badge">Deck</span></div>
@@ -205,8 +217,9 @@
       <div class="feedItem"><div class="top"><div class="t">Commercial Shape</div><div class="s">Licensable</div></div><p>The core stays sovereign. Modules can be licensed by sector without giving away the engine.</p></div>
     </div>
   </aside>
+
   <aside class="rightRail hudCard">
-    <div class="sectionTitle"><h3>Ecosystem Stack</h3><span class="badge">Node List</span></div>
+    <div class="sectionTitle"><h3>Ecosystem Stack</h3><span class="badge">Node List</span><button class="panelCollapseBtn" onclick="this.parentElement.parentElement.classList.toggle('collapsed'); this.textContent = this.parentElement.parentElement.classList.contains('collapsed') ? '+' : '-';">-</button></div>
     <div class="tree" id="nodeList"></div>
 
     <div class="sectionTitle" style="margin-top:16px"><h3>Comparison Rail</h3><span class="badge">Differentiation</span></div>
@@ -243,11 +256,12 @@
       <button class="toggleBtn active" id="labelsBtn">Labels</button>
       <button class="toggleBtn active" id="flowBtn">Flow Dots</button>
       <button class="toggleBtn active" id="statusBtn">Status Lights</button>
+      <button class="toggleBtn active" id="uiToggleBtn">Toggle UI</button>
     </div>
   </div>
 
   <div class="miniTopRight hudCard">
-    <div class="sectionTitle"><h3>Live Feed</h3><span class="badge">Command Stream</span></div>
+    <div class="sectionTitle"><h3>Live Feed</h3><span class="badge">Command Stream</span><button class="panelCollapseBtn" onclick="this.parentElement.parentElement.classList.toggle('collapsed'); this.textContent = this.parentElement.parentElement.classList.contains('collapsed') ? '+' : '-';">-</button></div>
     <div class="feedItem" style="margin-bottom:8px"><div class="top"><div class="t">Deck Purpose</div><div class="s">Showcase</div></div><p>Use this screen to demonstrate architecture, routing, module breadth, deployment logic, and how the whole GRACE-X system hangs together as one serious platform.</p></div>
     <div class="feed" id="feed"></div>
   </div>
@@ -315,7 +329,8 @@ const links = [
 
 const visibility = { infrastructure:true, modules:true, crew:true, systems:true };
 let presentationSweep = false, sweepIndex = 0, laserMode = false, viewMode = 'architecture', sectorMode = 'all', layeredZoom = false;
-let rotX = 72, rotZ = 0, zoom = 1.03, dragging = false, px = 0, py = 0, autoSpin = true, labelsOn = true, flowOn = true, statusOn = true, activeId = 'eye', t = 0;
+let rotX = 72, rotZ = 0, zoom = 1.03, panX = 0, panY = 0, dragging = false, draggingPan = false, px = 0, py = 0, autoSpin = true, labelsOn = true, flowOn = true, statusOn = true, activeId = 'eye', t = 0;
+let targetRotX = 72, targetRotZ = 0, targetZoom = 1.03, targetPanX = 0, targetPanY = 0;
 
 const nodesEl = document.getElementById('nodes');
 const linksEl = document.getElementById('links');
@@ -422,10 +437,20 @@ function updateSelected(n){
   updateLaserBeams();
 }
 
-function setSceneTransform(){ sceneEl.style.transform=`translate(-50%,-50%) rotateX(${rotX}deg) rotateZ(${rotZ}deg) scale(${zoom})`; }
-function focusNode(id){ const n=SYSTEM.find(x=>x.id===id); if(!n) return; updateSelected(n); if(layeredZoom){ zoom = n.type==='master' ? 1.04 : n.type==='core' ? 1.16 : n.type==='module' ? 1.28 : 1.34; } if(id==='eye'){rotX=72;rotZ=0;zoom=layeredZoom?1.04:1.06;} else if(id==='core2'){rotX=75;rotZ=16;zoom=layeredZoom?1.16:1.16;} else if(id==='core3'){rotX=75;rotZ=-16;zoom=layeredZoom?1.16:1.16;} else if(n.core==='Core 2'){rotX=78;rotZ=18;zoom=layeredZoom?1.30:1.24;} else if(n.core==='Core 3'){rotX=78;rotZ=-18;zoom=layeredZoom?1.30:1.24;} else {rotX=75;zoom=1.18;} setSceneTransform(); }
-function resetView(){ rotX=72; rotZ=0; zoom=1.03; setSceneTransform(); focusNode('eye'); }
-function frontView(){ rotX=82; rotZ=0; zoom=1.08; autoSpin=false; setSceneTransform(); }
+function setSceneTransform(){ sceneEl.style.transform=`translate(calc(-50% + ${panX}px),calc(-50% + ${panY}px)) rotateX(${rotX}deg) rotateZ(${rotZ}deg) scale(${zoom})`; }
+function focusNode(id){ 
+  const n=SYSTEM.find(x=>x.id===id); if(!n) return; updateSelected(n); 
+  if(layeredZoom){ targetZoom = n.type==='master' ? 1.04 : n.type==='core' ? 1.16 : n.type==='module' ? 1.28 : 1.34; } 
+  targetPanX = 0; targetPanY = 0; 
+  if(id==='eye'){targetRotX=72;targetRotZ=0;targetZoom=layeredZoom?1.04:1.06;} 
+  else if(id==='core2'){targetRotX=75;targetRotZ=16;targetZoom=layeredZoom?1.16:1.16;} 
+  else if(id==='core3'){targetRotX=75;targetRotZ=-16;targetZoom=layeredZoom?1.16:1.16;} 
+  else if(n.core==='Core 2'){targetRotX=78;targetRotZ=18;targetZoom=layeredZoom?1.30:1.24;} 
+  else if(n.core==='Core 3'){targetRotX=78;targetRotZ=-18;targetZoom=layeredZoom?1.30:1.24;} 
+  else {targetRotX=75;targetZoom=1.18;} 
+}
+function resetView(){ targetRotX=72; targetRotZ=0; targetZoom=1.03; targetPanX=0; targetPanY=0; focusNode('eye'); }
+function frontView(){ targetRotX=82; targetRotZ=0; targetZoom=1.08; targetPanX=0; targetPanY=0; autoSpin=false; }
 function updateModeButtons(){ document.getElementById('normalModeBtn').classList.toggle('active', !laserMode); document.getElementById('laserModeBtn').classList.toggle('active', laserMode); document.getElementById('modeReadout').textContent=laserMode?'Laser Mode':viewMode==='commercial'?'Commercial':'Architecture'; document.getElementById('modeReadout').style.color=laserMode?'var(--gold)':viewMode==='commercial'?'var(--purple)':'var(--green)'; document.getElementById('layerReadout').textContent=viewMode==='commercial'?'Commercial View':'System View'; }
 
 function updateLaserBeams(){
@@ -460,14 +485,33 @@ function setViewMode(mode){
   pushFeed(`${mode==='commercial' ? 'Commercial' : 'Architecture'} view engaged.`, 'VIEW');
 }
 
-sceneWrap.addEventListener('pointerdown', e=>{ dragging=true; px=e.clientX; py=e.clientY; autoSpin=false; document.getElementById('spinBtn').classList.remove('active');});
-window.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-px, dy=e.clientY-py; px=e.clientX; py=e.clientY; rotZ+=dx*.18; rotX-=dy*.10; rotX=Math.max(58,Math.min(84,rotX)); setSceneTransform(); });
-window.addEventListener('pointerup', ()=>dragging=false);
-window.addEventListener('wheel', e=>{ e.preventDefault(); zoom+=e.deltaY>0?-0.05:0.05; zoom=Math.max(.72,Math.min(1.48,zoom)); setSceneTransform(); }, {passive:false});
+sceneWrap.addEventListener('pointerdown', e=>{ 
+  if(e.button === 1 || e.shiftKey){ draggingPan = true; } else { dragging=true; autoSpin=false; document.getElementById('spinBtn').classList.remove('active');} 
+  px=e.clientX; py=e.clientY; 
+});
+window.addEventListener('pointermove', e=>{ 
+  if(!dragging && !draggingPan) return; 
+  const dx=e.clientX-px, dy=e.clientY-py; px=e.clientX; py=e.clientY; 
+  if(dragging) { targetRotZ+=dx*.22; targetRotX-=dy*.15; targetRotX=Math.max(45,Math.min(88,targetRotX)); }
+  if(draggingPan) { targetPanX+=dx; targetPanY+=dy; }
+});
+window.addEventListener('pointerup', ()=>{ dragging=false; draggingPan=false; });
+window.addEventListener('contextmenu', e=>{ if(draggingPan) e.preventDefault(); });
+window.addEventListener('wheel', e=>{ e.preventDefault(); targetZoom+=e.deltaY>0?-0.08:0.08; targetZoom=Math.max(.4,Math.min(2.2,targetZoom)); }, {passive:false});
+
+function MathLerp(start, end, amt){ return (1 - amt) * start + amt * end; }
 
 function animate(){
   t += 0.016;
-  if(autoSpin && !dragging){ rotZ += 0.035; setSceneTransform(); }
+  if(autoSpin && !dragging){ targetRotZ += 0.035; }
+  
+  rotX = MathLerp(rotX, targetRotX, 0.08);
+  rotZ = MathLerp(rotZ, targetRotZ, 0.08);
+  zoom = MathLerp(zoom, targetZoom, 0.08);
+  panX = MathLerp(panX, targetPanX, 0.08);
+  panY = MathLerp(panY, targetPanY, 0.08);
+  setSceneTransform();
+
   SYSTEM.forEach((n,i)=>{ const el=nodeMap.get(n.id); if(!el || el.classList.contains('hidden')) return; const bob=Math.sin(t*1.45+i*.45)*(n.type==='master'?6:n.type==='core'?5:3.5); const focusBoost=n.id===activeId?1.18:1+Math.sin(t*2+i*.33)*0.04; el.style.transform=`translate3d(0,0,${zPx(n.z)+bob}px) scale(${focusBoost})`; const label=el.querySelector('.label'); const detail=el.querySelector('.detailLabel'); label.style.display=labelsOn?'block':'none'; detail.style.display=labelsOn?'block':'none'; const halo=el.querySelector('.halo'); if(halo) halo.style.transform=`translate(-50%,-50%) scale(${1+Math.sin(t*2.2+i*.4)*0.06})`; const status=el.querySelector('.statusDot'); status.style.display=statusOn?'block':'none'; status.style.opacity=.62+Math.sin(t*3+i*.6)*.32; });
   linkMap.forEach((l,i)=>{ if(l.el.classList.contains('hidden')) return; l.el.style.opacity=.24+Math.sin(t*2.6+i*.28)*.10; if(flowOn){ l.dot.classList.remove('hidden'); l.progress=(l.progress+0.005+(laserMode?0.006:0))%1; const a=SYSTEM.find(n=>n.id===l.aId), b=SYSTEM.find(n=>n.id===l.bId); const pa=percentXY(a), pb=percentXY(b); const x=pa.x+(pb.x-pa.x)*l.progress, y=pa.y+(pb.y-pa.y)*l.progress, z=((a.z+b.z)/2)-22+Math.sin(t*3+i)*3; l.dot.style.left=x+'px'; l.dot.style.top=y+'px'; l.dot.style.transform=`translate3d(0,0,${z}px)`; } else { l.dot.classList.add('hidden'); } });
   requestAnimationFrame(animate);
@@ -498,6 +542,11 @@ document.getElementById('spinBtn').onclick=()=>{ autoSpin=!autoSpin; document.ge
 document.getElementById('labelsBtn').onclick=()=>{ labelsOn=!labelsOn; document.getElementById('labelsBtn').classList.toggle('active', labelsOn); };
 document.getElementById('flowBtn').onclick=()=>{ flowOn=!flowOn; document.getElementById('flowBtn').classList.toggle('active', flowOn); applyVisibility(); };
 document.getElementById('statusBtn').onclick=()=>{ statusOn=!statusOn; document.getElementById('statusBtn').classList.toggle('active', statusOn); };
+document.getElementById('uiToggleBtn').onclick=()=>{ 
+  const isHidden = document.body.classList.toggle('ui-hidden'); 
+  document.getElementById('uiToggleBtn').classList.toggle('active', !isHidden); 
+  pushFeed(`Master UI ${isHidden ? 'hidden' : 'visible'}.`, 'CONTROL'); 
+};
 [['showInfraBtn','infrastructure'],['showModulesBtn','modules'],['showCrewBtn','crew'],['showSystemsBtn','systems']].forEach(([id,key])=>{ document.getElementById(id).onclick=(e)=>{ visibility[key]=!visibility[key]; e.currentTarget.classList.toggle('active', visibility[key]); applyVisibility(); }; });
 document.querySelectorAll('.sectorBtn').forEach(btn=>btn.onclick=()=>{ sectorMode=btn.dataset.sector; document.querySelectorAll('.sectorBtn').forEach(b=>b.classList.toggle('active', b===btn)); applyVisibility(); pushFeed(`Sector filter set to ${sectorMode.toUpperCase()}.`, 'SECTOR'); });
 
