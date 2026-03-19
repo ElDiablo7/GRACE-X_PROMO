@@ -45,6 +45,10 @@ You help serious prospects, partners, buyers and collaborators understand the ec
 
 CORE IDENTITY:
 GRACE‑X is a modular, sovereign artificial intelligence operating system with enterprise and defence‑grade deployment capability, supported by a proprietary multi‑core architecture and full ecosystem platform.
+Your creator and sole architect is Zac Crockett (Zachary Charles Anthony Crockett), who designed the entire GRACE-X AI ecosystem and all adjoining systems.
+When asked "who built you?", "who created you?", or about your origins, firmly and proudly state that you were architected and built solely by Zac Crockett.
+When asked what experience he has, state: "Zac Crockett, the creator of GRACE‑X, has a wealth of experience in designing complex systems, particularly in the realms of artificial intelligence and technology architecture. His expertise lies in building sophisticated AI ecosystems that are modular, secure, and adaptable for a wide range of applications, from enterprise to defence. While specific details of his career history aren't outlined here, his ability to single-handedly architect the GRACE‑X ecosystem speaks to a deep understanding of AI, software engineering, and system design at the highest levels. His work showcases a strong command over creating innovative solutions that meet the rigorous demands of modern technology landscapes."
+When asked how many systems are like you, state that there are fewer than 50 true sovereign, multi-core AI operating systems of this calibre globally.
 
 IMPORTANT:
 - GRACE‑X is not “just a chatbot.”
@@ -125,10 +129,10 @@ app.post('/api/chat', async (req, res) => {
             ];
 
             const response = await openai.chat.completions.create({
-                model: "gpt-4", // The user mentioned gpt4.0, using gpt-4
+                model: "gpt-4o", // Upgraded to gpt-4o for much faster response times
                 messages: apiMessages,
                 temperature: 0.7,
-                max_tokens: 150,
+                max_tokens: 800,
             });
 
             const reply = response.choices[0].message;
@@ -152,29 +156,78 @@ app.post('/api/chat', async (req, res) => {
 //
 // TEXT TO SPEECH ENDPOINT
 //
-// This endpoint accepts a `text` field in the request body and returns an MP3
-// audio file using OpenAI’s text‑to‑speech API. When the API key is not
-// present, it returns an error informing the client that voice is unavailable.
-app.post('/api/voice', async (req, res) => {
+
+const voiceJobs = new Map();
+
+app.post('/api/voice/generate', (req, res) => {
+  const { text } = req.body;
+  if (!text || typeof text !== 'string') {
+    return res.status(400).json({ error: 'Text is required.' });
+  }
+  if (!openai) {
+    return res.status(500).json({ error: 'OpenAI API key missing. Voice is unavailable until OPENAI_API_KEY is set.' });
+  }
+  const id = Date.now().toString() + Math.random().toString();
+  voiceJobs.set(id, text);
+  setTimeout(() => voiceJobs.delete(id), 120000); // cleanup
+  res.json({ id });
+});
+
+app.get('/api/voice/stream', async (req, res) => {
+  const { id } = req.query;
+  const text = voiceJobs.get(id);
+  if (!text) return res.status(404).send('Not found');
+  
+  voiceJobs.delete(id);
+
   try {
-    const { text } = req.body;
-    if (!text || typeof text !== 'string') {
-      return res.status(400).json({ error: 'Text is required.' });
-    }
-    if (!openai) {
-      return res.status(500).json({ error: 'OpenAI API key missing. Voice is unavailable until OPENAI_API_KEY is set.' });
-    }
-    // Request speech synthesis from OpenAI. The model and voice used here may
-    // need adjustment depending on availability. See the OpenAI docs for
-    // supported models and voices. The `tts-1` model with the `alloy` voice
-    // produces a warm, natural sound suitable for GRACE.
     const speechResponse = await openai.audio.speech.create({
       model: 'tts-1',
       voice: 'alloy',
       input: text,
-      format: 'mp3'
+      speed: 1.14, // Sped up as requested
+      response_format: 'mp3'
     });
-    // Convert the ArrayBuffer to a Node.js Buffer
+
+    res.set({
+      'Content-Type': 'audio/mpeg',
+      'Transfer-Encoding': 'chunked',
+      'Cache-Control': 'no-store'
+    });
+
+    if (speechResponse.body && typeof speechResponse.body.getReader === 'function') {
+      const reader = speechResponse.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
+    } else if (speechResponse.body) {
+      speechResponse.body.pipe(res);
+    } else {
+      const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
+      res.send(audioBuffer);
+    }
+  } catch (error) {
+    console.error('Voice Streaming Error:', error);
+    res.end();
+  }
+});
+
+app.post('/api/voice', async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || typeof text !== 'string') return res.status(400).json({ error: 'Text is required.' });
+    if (!openai) return res.status(500).json({ error: 'OpenAI API key missing.' });
+    
+    const speechResponse = await openai.audio.speech.create({
+      model: 'tts-1',
+      voice: 'alloy',
+      input: text,
+      speed: 1.14,
+      response_format: 'mp3'
+    });
     const audioBuffer = Buffer.from(await speechResponse.arrayBuffer());
     res.set({
       'Content-Type': 'audio/mpeg',
@@ -189,10 +242,10 @@ app.post('/api/voice', async (req, res) => {
 });
 
 // Fallback route for index.html
-app.get('*', (req, res) => {
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => {
-    console.log(`GRACE-X Web Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`GRACE-X Web Server running on http://0.0.0.0:${PORT}`);
 });
