@@ -1,0 +1,9 @@
+{
+  "files": {
+    "protected/command_deck.html": "5fc215bf5028d38c298d2f049fbe7a6da5d87b78cd7d905f04390846485d95f5",
+    "components/gx-map/gx-map.css": "2b37aeb23493c7a4985a10153260958c1a612d331d46716d646dda7c1c21492d",
+    "components/gx-map/gx-map.js": "d3c03126e47b0abaa380237b375c22b5baaa437803561f18c2ba8f43a19eea44",
+    "tools/gx-map-patch.js": "e83f7343a876676100cbbf65f86c86169a79c5812c62017182958ab814fd7394",
+    "gx-map.patch.config.json": "2cc8908653d50769ea3fe39a494f8df19bc921df5281d6648d9cecbbe4a191db"
+  }
+}
